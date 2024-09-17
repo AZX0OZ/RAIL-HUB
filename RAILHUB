@@ -33,7 +33,7 @@ _G.Key = "railhub-k923h-37dsh-6due-hui8"
 _G.KeyImput = "string"
 
 function MakeScriptHub()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/AZX0OZ/RAILHUB/main/ORIGrailkahub.txt"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/AZX0OZ/RAILHUB/refs/heads/main/railhub.txt"))()
 
 wait(1)
         Window:Destroy()
