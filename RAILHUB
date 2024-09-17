@@ -1,0 +1,109 @@
+-- кто крякнет тот сын шлюхи
+ -- ###############            ###           ###   ###              ###          ###   ###        ###   ############                      
+ -- ###          ###          #####          ###   ###              ###          ###   ###        ###   ###       ###                         
+ -- ###          ###         ### ###               ###              ###          ###   ###        ###   ###       ###              
+ -- ###        ###          ###   ###        ###   ###              ###          ###   ###        ###   ############                          
+ -- ############           ###     ###       ###   ###              ################   ###        ###   ###        ###                                  
+ -- ###       ###         #############      ###   ###              ################   ###        ###   ###         ###                   
+ -- ###        ###       ###         ###     ###   ###              ###          ###   ###        ###   ###         ###                              
+ -- ###         ###     ###           ###    ###   ##############   ###          ###    ############    ###         ###                         
+ -- ###          ###   ###             ###   ###   ##############   ###          ###     ##########     ##############                                               
+----------------------------------------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------------------------------------
+
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+
+local Window = OrionLib:MakeWindow({Name = "Key System", HidePremium = false, SaveConfig = true, IntroText = "Key System"})
+
+OrionLib:MakeNotification({
+	Name = "Hi!",
+	Content = "You are logged in ",
+	Image = "rbxassetid://4483345998",
+	Time = 5
+})
+
+_G.Key = "railhub-k923h-37dsh-6due-hui8"
+
+_G.KeyImput = "string"
+
+function MakeScriptHub()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/AZX0OZ/RAILHUB/main/ORIGrailkahub.txt"))()
+
+wait(1)
+        Window:Destroy()
+        MakeScriptHub()
+        
+end
+
+function CorrectKeyNotification()
+    OrionLib:MakeNotification({
+	    Name = "Correct Key!",
+	    Content = "welcome",
+	    Image = "rbxassetid://4483345998",
+	    Time = 5
+    })
+end
+
+function InvalidKeyNotification()
+    OrionLib:MakeNotification({
+	    Name = "Invalid Key!",
+	    Content = "Please check the key",
+	    Image = "rbxassetid://4483345998",
+	    Time = 5
+    })
+end
+
+local Tab = Window:MakeTab({
+	Name = "Key",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+
+})
+
+Tab:AddTextbox({
+	Name = "Enter Key",
+	Default = "",
+	TextDisappear = true,
+	Callback = function(Value)
+		_G.KeyImput = Value
+	end	  
+})
+
+Tab:AddButton({
+	Name = "Check Key",
+	Callback = function()
+      	if _G.KeyImput == _G.Key then
+        MakeScriptHub()
+        CorrectKeyNotification()
+        wait(1)
+        Window:Destroy()
+        MakeScriptHub()
+        else
+            InvalidKeyNotification()
+        end
+  	end    
+})
+
+local textToCopy = "https://loot-link.com/s?42fac3a8"
+
+Tab:AddButton({
+	Name = "Copy Key link",
+	Callback = function()
+        setclipboard(textToCopy) -- Копируем текст в буфер обмена
+        OrionLib:MakeNotification({
+            Name = "Copied!",
+            Content = "Text has been copied to clipboard.",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+            })
+    end    
+})
+
+
+
