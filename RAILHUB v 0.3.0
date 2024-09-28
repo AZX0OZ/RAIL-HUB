@@ -195,21 +195,50 @@ local Section = Tab:AddSection({
 	Name = "Camera"
 })
 
+local savedFov = 70 -- Variable to hold the saved FOV value
+
 Tab:AddSlider({
-	Name = "Fov (не работает)",
-	Min = 10,
-	Max = 120,
-	Default = 70,
-	Color = Color3.fromRGB(255,255,255),
-	Increment = 1,
-	ValueName = "Fov",
-	Callback = function(Value)
-	
+    Name = "Fov",
+    Min = 10,
+    Max = 120,
+    Default = 70,
+    Color = Color3.fromRGB(255, 255, 255),
+    Increment = 1,
+    ValueName = "Fov",
+    Callback = function(Value)
+        -- Change the camera's Field of View
+        local player = game.Players.LocalPlayer
+        local camera = workspace.CurrentCamera
 
-
-    
-	end    
+        -- Set the Field of View to the value from the slider
+        camera.FieldOfView = Value
+        savedFov = Value -- Save the new value
+    end    
 })
+
+-- Function to reset the FOV when the right mouse button is released
+local function onRightMouseButtonReleased()
+    wait(0.8) -- Wait for 0.5 seconds
+    local player = game.Players.LocalPlayer
+    local camera = workspace.CurrentCamera
+
+    -- Check if the current FOV matches the saved FOV
+    if camera.FieldOfView ~= savedFov then
+        camera.FieldOfView = savedFov -- Reset to saved FOV
+    end
+end
+
+-- Bind the right mouse button release event
+local userInputService = game:GetService("UserInputService")
+userInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton2 then -- Right mouse button
+        onRightMouseButtonReleased()
+    end
+end)
+
+
+
+
 
 -- Кнопка
 Tab:AddButton({
