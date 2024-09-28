@@ -1,0 +1,663 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -- кто крякнет тот сын шлюхи
+ -- ###############            ###           ###   ###              ###          ###   ###        ###   ############                      
+ -- ###          ###          #####          ###   ###              ###          ###   ###        ###   ###       ###                         
+ -- ###          ###         ### ###               ###              ###          ###   ###        ###   ###       ###              
+ -- ###        ###          ###   ###        ###   ###              ###          ###   ###        ###   ############                          
+ -- ############           ###     ###       ###   ###              ################   ###        ###   ###        ###                                  
+ -- ###       ###         #############      ###   ###              ################   ###        ###   ###         ###                   
+ -- ###        ###       ###         ###     ###   ###              ###          ###   ###        ###   ###         ###                              
+ -- ###         ###     ###           ###    ###   ##############   ###          ###    ############    ###         ###                         
+ -- ###          ###   ###             ###   ###   ##############   ###          ###     ##########     ##############                                               
+----------------------------------------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------------------------------------
+-- Ссылка на Библиотеку
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+
+-- Создать окно UI
+local Window = OrionLib:MakeWindow({Name = "RAILhub     Army Roblox RP RU", HidePremium = false, IntroText = "RAILhub", SaveConfig = false, ConfigFolder = "OrionTest"})
+
+-- Секция
+local Tab = Window:MakeTab({
+	Name = "Тп",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "Фарм тп           КОНТРАБАНДИСТЫ"
+})
+
+Tab:AddButton({
+	Name = "склад",
+	Callback = function()
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(623.0984497070312, 3.999999523162842, -697.6439208984375)
+  	end    
+})
+
+-- Кнопка
+Tab:AddButton({
+	Name = "задание",
+	Callback = function()
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(106.91151428222656, 3.2501282691955566, 113.99207305908203)
+  	end    
+})
+
+
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "Точки интереса"
+})
+
+-- Кнопка
+Tab:AddButton({
+	Name = "Кофейня",
+	Callback = function()
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1510.12548828125, 3, -50.033023834228516)
+  	end    
+})
+
+-- Кнопка
+Tab:AddButton({
+	Name = "КПП-1",
+	Callback = function()
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(345.38934326171875, 3.099998950958252, 3.619844436645508)
+  	end    
+})
+
+-- Кнопка
+Tab:AddButton({
+	Name = "КПП-2",
+	Callback = function()
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2096.35595703125, 2.999999523162842, 93.45025634765625)
+  	end    
+})
+
+-- Кнопка
+Tab:AddButton({
+	Name = "Деревня",
+	Callback = function()
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2578.659912109375, 3.050001621246338, 48.234134674072266)
+  	end    
+})
+
+-- Кнопка
+Tab:AddButton({
+	Name = "Плац",
+	Callback = function()
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(33.97133255004883, 3.0999984741210938, -13.471328735351562)
+  	end    
+})
+
+-- Кнопка
+Tab:AddButton({
+	Name = "База кантробандистов",
+	Callback = function()
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(647.6337280273438, 18.26999282836914, -717.4557495117188)
+  	end    
+})
+
+-- Кнопка
+Tab:AddButton({
+	Name = "Кусты перед КПП-1",
+	Callback = function()
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(457.5315, 12.9999, -43.6891)
+  	end    
+})
+
+-- Кнопка
+Tab:AddButton({
+	Name = "База наёмников",
+	Callback = function()
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(848.868408203125, 3.019998550415039, -1238.0062255859375)
+  	end    
+})
+
+-- Кнопка
+Tab:AddButton({
+	Name = "Вышка у КПП-1",
+	Callback = function()
+      	    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(590.221, 140.583, 292.378)
+  	end    
+})
+
+
+
+-- Секция-------------------------------------------------------------------------------------------------
+local Tab = Window:MakeTab({
+	Name = "Игрок",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "AFK"
+})
+
+-- Кнопка
+Tab:AddButton({
+	Name = "!",
+	Callback = function()
+      	    
+  	end    
+})
+
+
+local isAFK = false  -- Инициализируем переменную isAFK
+
+Tab:AddToggle({
+    Name = "AFK MOD (test)",
+    Default = false,
+    Callback = function(Value)
+        local VU = game:GetService("VirtualUser")
+        
+        isAFK = Value  -- Устанавливаем значение isAFK на основе чекбокса
+
+        if isAFK then
+            while isAFK do  -- Зацикливаем до тех пор, пока isAFK истинно
+                wait(300)  -- Можно изменить на нужный интервал ожидания.
+                VU:CaptureController()
+                VU:ClickButton1(Vector2.new())
+            end
+        end
+    end
+})
+
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "Camera"
+})
+
+Tab:AddSlider({
+	Name = "Fov (test)",
+	Min = 10,
+	Max = 120,
+	Default = 70,
+	Color = Color3.fromRGB(255,255,255),
+	Increment = 1,
+	ValueName = "Fov",
+	Callback = function(Value)
+	
+
+
+    
+	end    
+})
+
+-- Кнопка
+Tab:AddButton({
+	Name = "free cam (shift + p)",
+	Callback = function()
+      	    loadstring(game:HttpGet('https://raw.githubusercontent.com/Rollimonster/Roblox-FreeCam-Script/refs/heads/main/Roblox-FreeCam-Script'))()
+  	end    
+})
+
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "Скорость"
+})
+
+Tab:AddSlider({
+    Name = "Скорость",
+    Min = 0,
+    Max = 40,
+    Default = 12,
+    Color = Color3.fromRGB(56, 255, 0),
+    Increment = 1,
+    ValueName = "Скорость",
+    Callback = function(Value)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+    end    
+})
+
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "Hitbox"
+})
+
+-- Кнопка
+Tab:AddButton({
+    Name = "BigHitbox",
+    Callback = function()
+        _G.Size = 15
+        _G.Disabled = true
+
+        game:GetService('RunService').RenderStepped:Connect(function()
+            if _G.Disabled then
+                for _, player in pairs(game:GetService('Players'):GetPlayers()) do
+                    if player.Name ~= game:GetService('Players').LocalPlayer.Name then
+                        local character = player.Character
+                        if character and character:FindFirstChild("HumanoidRootPart") then
+                            local humanoidRootPart = character.HumanoidRootPart
+                            pcall(function()
+                                humanoidRootPart.Size = Vector3.new(_G.Size, _G.Size, _G.Size)
+                                humanoidRootPart.Transparency = 0.9
+                                humanoidRootPart.BrickColor = BrickColor.new("Really red")
+                                humanoidRootPart.Material = Enum.Material.Neon
+                                humanoidRootPart.CanCollide = false
+                            end)
+                        end
+                    end
+                end
+            end
+        end)
+    end
+})
+
+Tab:AddSlider({
+    Name = "Hitbox",
+    Min = 0,
+    Max = 60,
+    Default = 0,
+    Color = Color3.fromRGB(255, 255, 255),
+    Increment = 1,
+    ValueName = "Hitbox",
+    Callback = function(Value)
+        _G.Size = Value
+        _G.Disabled = true
+
+        game:GetService('RunService').RenderStepped:Connect(function()
+            if _G.Disabled then
+                for _, player in pairs(game:GetService('Players'):GetPlayers()) do
+                    if player.Name ~= game:GetService('Players').LocalPlayer.Name then
+                        local character = player.Character
+                        if character and character:FindFirstChild("HumanoidRootPart") then
+                            local humanoidRootPart = character.HumanoidRootPart
+                            pcall(function()
+                                humanoidRootPart.Size = Vector3.new(_G.Size, _G.Size, _G.Size)
+                                humanoidRootPart.Transparency = 0.9
+                                humanoidRootPart.BrickColor = BrickColor.new("Really red")
+                                humanoidRootPart.Material = Enum.Material.Neon
+                                humanoidRootPart.CanCollide = false
+                            end)
+                        end
+                    end
+                end
+            end
+        end)
+    end
+})
+
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "Esp"
+})
+
+-- Кнопка
+Tab:AddButton({
+    Name = "Esp",
+    Callback = function()
+            loadstring(game:HttpGet('https://raw.githubusercontent.com/Lucasfin000/SpaceHub/main/UESP'))()
+end
+})
+
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "TpTool"
+})
+
+-- Кнопка
+Tab:AddButton({
+    Name = "TpTool",
+    Callback = function()
+        local LocalPlayer = game.Players.LocalPlayer
+        local rp = LocalPlayer.Character.HumanoidRootPart
+        local tool = Instance.new("Tool", LocalPlayer.Backpack)
+        local mouse = LocalPlayer:GetMouse()
+
+        tool.Name = "click tp"
+        tool.RequiresHandle = false
+        
+        tool.Activated:Connect(function()
+            rp.CFrame = CFrame.new(mouse.Hit.X, mouse.Hit.Y + 4, mouse.Hit.Z)
+        end)
+    end
+})
+
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "СtrlClickDelete"
+})
+
+-- Кнопка
+Tab:AddButton({
+    Name = "СtrlClickDelete",
+    Callback = function()
+--Hold CLTR and click to delete parts (you need to rejoin if you delete something wrong)
+local Plr = game:GetService("Players").LocalPlayer
+local Mouse = Plr:GetMouse()
+ 
+Mouse.Button1Down:connect(function()
+if not game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.LeftControl) then return end
+if not Mouse.Target then return end
+Mouse.Target:Destroy()
+end)
+end
+})
+
+---------------------------------------------------------------------------------------------------
+local Tab = Window:MakeTab({
+	Name = "Мир",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "Карта"
+})
+
+-- Кнопка
+Tab:AddButton({
+    Name = "Все светло",
+    Callback = function()
+if not _G.FullBrightExecuted then
+
+	_G.FullBrightEnabled = false
+
+	_G.NormalLightingSettings = {
+		Brightness = game:GetService("Lighting").Brightness,
+		ClockTime = game:GetService("Lighting").ClockTime,
+		FogEnd = game:GetService("Lighting").FogEnd,
+		GlobalShadows = game:GetService("Lighting").GlobalShadows,
+		Ambient = game:GetService("Lighting").Ambient
+	}
+
+	game:GetService("Lighting"):GetPropertyChangedSignal("Brightness"):Connect(function()
+		if game:GetService("Lighting").Brightness ~= 1 and game:GetService("Lighting").Brightness ~= _G.NormalLightingSettings.Brightness then
+			_G.NormalLightingSettings.Brightness = game:GetService("Lighting").Brightness
+			if not _G.FullBrightEnabled then
+				repeat
+					wait()
+				until _G.FullBrightEnabled
+			end
+			game:GetService("Lighting").Brightness = 1
+		end
+	end)
+
+	game:GetService("Lighting"):GetPropertyChangedSignal("ClockTime"):Connect(function()
+		if game:GetService("Lighting").ClockTime ~= 13 and game:GetService("Lighting").ClockTime ~= _G.NormalLightingSettings.ClockTime then
+			_G.NormalLightingSettings.ClockTime = game:GetService("Lighting").ClockTime
+			if not _G.FullBrightEnabled then
+				repeat
+					wait()
+				until _G.FullBrightEnabled
+			end
+			game:GetService("Lighting").ClockTime = 13
+		end
+	end)
+
+	game:GetService("Lighting"):GetPropertyChangedSignal("FogEnd"):Connect(function()
+		if game:GetService("Lighting").FogEnd ~= 786543 and game:GetService("Lighting").FogEnd ~= _G.NormalLightingSettings.FogEnd then
+			_G.NormalLightingSettings.FogEnd = game:GetService("Lighting").FogEnd
+			if not _G.FullBrightEnabled then
+				repeat
+					wait()
+				until _G.FullBrightEnabled
+			end
+			game:GetService("Lighting").FogEnd = 786543
+		end
+	end)
+
+	game:GetService("Lighting"):GetPropertyChangedSignal("GlobalShadows"):Connect(function()
+		if game:GetService("Lighting").GlobalShadows ~= false and game:GetService("Lighting").GlobalShadows ~= _G.NormalLightingSettings.GlobalShadows then
+			_G.NormalLightingSettings.GlobalShadows = game:GetService("Lighting").GlobalShadows
+			if not _G.FullBrightEnabled then
+				repeat
+					wait()
+				until _G.FullBrightEnabled
+			end
+			game:GetService("Lighting").GlobalShadows = false
+		end
+	end)
+
+	game:GetService("Lighting"):GetPropertyChangedSignal("Ambient"):Connect(function()
+		if game:GetService("Lighting").Ambient ~= Color3.fromRGB(178, 178, 178) and game:GetService("Lighting").Ambient ~= _G.NormalLightingSettings.Ambient then
+			_G.NormalLightingSettings.Ambient = game:GetService("Lighting").Ambient
+			if not _G.FullBrightEnabled then
+				repeat
+					wait()
+				until _G.FullBrightEnabled
+			end
+			game:GetService("Lighting").Ambient = Color3.fromRGB(178, 178, 178)
+		end
+	end)
+
+	game:GetService("Lighting").Brightness = 1
+	game:GetService("Lighting").ClockTime = 13
+	game:GetService("Lighting").FogEnd = 786543
+	game:GetService("Lighting").GlobalShadows = false
+	game:GetService("Lighting").Ambient = Color3.fromRGB(178, 178, 178)
+
+	local LatestValue = true
+	spawn(function()
+		repeat
+			wait()
+		until _G.FullBrightEnabled
+		while wait() do
+			if _G.FullBrightEnabled ~= LatestValue then
+				if not _G.FullBrightEnabled then
+					game:GetService("Lighting").Brightness = _G.NormalLightingSettings.Brightness
+					game:GetService("Lighting").ClockTime = _G.NormalLightingSettings.ClockTime
+					game:GetService("Lighting").FogEnd = _G.NormalLightingSettings.FogEnd
+					game:GetService("Lighting").GlobalShadows = _G.NormalLightingSettings.GlobalShadows
+					game:GetService("Lighting").Ambient = _G.NormalLightingSettings.Ambient
+				else
+					game:GetService("Lighting").Brightness = 1
+					game:GetService("Lighting").ClockTime = 12
+					game:GetService("Lighting").FogEnd = 786543
+					game:GetService("Lighting").GlobalShadows = false
+					game:GetService("Lighting").Ambient = Color3.fromRGB(178, 178, 178)
+				end
+				LatestValue = not LatestValue
+			end
+		end
+	end)
+end
+
+_G.FullBrightExecuted = true
+_G.FullBrightEnabled = not _G.FullBrightEnabled
+end
+})
+
+-- Кнопка
+Tab:AddButton({
+    Name = "Удалить зелень",
+    Callback = function()
+    -- Получаем папку "map"
+    local mapFolder = game.Workspace:FindFirstChild("map") 
+
+    if mapFolder then
+        -- Удаляем папку "Trees", если она есть
+        local treesFolder = mapFolder:FindFirstChild("Trees") 
+        
+        if treesFolder then
+            treesFolder:Destroy() -- Удаляем папку "Trees"
+            print("Папка 'Trees' была удалена.") 
+        else
+            print("Папка 'Trees' не найдена в папке 'map'.") 
+        end
+
+        -- Удаляем все модели "Tree" из папки "map"
+        for _, model in pairs(mapFolder:GetChildren()) do
+            if model:IsA("Model") and model.Name == "Tree" then
+                model:Destroy() -- Удаляем модель "Tree"
+                print("Модель 'Tree' была удалена.")
+            end
+        end
+
+    else
+        print("Папка 'map' не найдена в Workspace.") 
+    end
+end
+})
+
+-- Кнопка
+Tab:AddButton({
+    Name = "Удалить туман",
+    Callback = function()
+    -- Получаем папку Lighting
+    local lightingFolder = game:GetService("Lighting") 
+
+    -- Удаляем все объекты в Lighting
+    for _, child in ipairs(lightingFolder:GetChildren()) do
+        child:Destroy() -- Удаляем объект
+        print("Объект '" .. child.Name .. "' был удален из Lighting.") -- Выводим сообщение о удалении
+    end
+
+    print("Туман был удалён")
+end
+})
+
+-- Кнопка
+Tab:AddButton({
+    Name = "Fps boost",
+    Callback = function()
+    local decalsyeeted = true 
+    local g = game
+    local w = g.Workspace
+    local l = g.Lighting
+    local t = w.Terrain
+
+    sethiddenproperty(l, "Technology", 2)
+    sethiddenproperty(t, "Decoration", false)
+    t.WaterWaveSize = 0
+    t.WaterWaveSpeed = 0
+    t.WaterReflectance = 0
+    t.WaterTransparency = 0
+    l.GlobalShadows = 0
+    l.FogEnd = 9e9
+    l.Brightness = 0
+    settings().Rendering.QualityLevel = "Level01"
+
+    for i, v in pairs(w:GetDescendants()) do
+        if v:IsA("BasePart") and not v:IsA("MeshPart") then
+            v.Material = "Plastic"
+            v.Reflectance = 0
+        elseif (v:IsA("Decal") or v:IsA("Texture")) and decalsyeeted then
+            v.Transparency = 1
+        elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+            v.Lifetime = NumberRange.new(0)
+        elseif v:IsA("Explosion") then
+            v.BlastPressure = 1
+            v.BlastRadius = 1
+        elseif v:IsA("Fire") or v:IsA("SpotLight") or v:IsA("Smoke") or v:IsA("Sparkles") then
+            v.Enabled = false
+        elseif v:IsA("MeshPart") and decalsyeeted then
+            v.Material = "Plastic"
+            v.Reflectance = 0
+            v.TextureID = 10385902758728957 -- Make sure this texture ID is valid
+        elseif v:IsA("SpecialMesh") and decalsyeeted then
+            v.TextureId = 0
+        elseif v:IsA("ShirtGraphic") and decalsyeeted then
+            v.Graphic = 0
+        elseif (v:IsA("Shirt") or v:IsA("Pants")) and decalsyeeted then
+            v[v.ClassName .. "Template"] = 0
+        end
+    end
+
+    for i = 1, #l:GetChildren() do
+        local e = l:GetChildren()[i]
+        if e:IsA("BlurEffect") or e:IsA("SunRaysEffect") or e:IsA("ColorCorrectionEffect") or e:IsA("BloomEffect") or e:IsA("DepthOfFieldEffect") then
+            e.Enabled = false
+        end
+    end
+
+    w.DescendantAdded:Connect(function(v)
+        wait() -- prevent errors and allow time for properties to update
+        if v:IsA("BasePart") and not v:IsA("MeshPart") then
+            v.Material = "Plastic"
+            v.Reflectance = 0
+        elseif (v:IsA("Decal") or v:IsA("Texture")) and decalsyeeted then
+            v.Transparency = 1
+        elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+            v.Lifetime = NumberRange.new(0)
+        elseif v:IsA("Explosion") then
+            v.BlastPressure = 1
+            v.BlastRadius = 1
+        elseif v:IsA("Fire") or v:IsA("SpotLight") or v:IsA("Smoke") or v:IsA("Sparkles") then
+            v.Enabled = false
+        elseif v:IsA("MeshPart") and decalsyeeted then
+            v.Material = "Plastic"
+            v.Reflectance = 0
+            v.TextureID = 10385902758728957 -- Make sure this texture ID is valid
+        elseif v:IsA("SpecialMesh") and decalsyeeted then
+            v.TextureId = 0
+        elseif v:IsA("ShirtGraphic") and decalsyeeted then
+            v.ShirtGraphic = 0
+        elseif (v:IsA("Shirt") or v:IsA("Pants")) and decalsyeeted then
+            v[v.ClassName .. "Template"] = 0
+        end
+    end)
+end
+})
+
+-- Кнопка
+Tab:AddButton({
+    Name = "RTX (lag) вкл-выкл",
+    Callback = function()
+local Lighting = game:GetService("Lighting")
+
+    if not isRtxEnabled then
+        -- Включить RTX настройки
+        Lighting.Technology = Enum.Technology.Future
+        Lighting.Ambient = Color3.fromRGB(25, 25, 25) 
+        Lighting.OutdoorAmbient = Color3.fromRGB(25, 25, 25) 
+        Lighting.ShadowSoftness = 0.1
+        Lighting.EnvironmentDiffuseScale = 0.7
+        Lighting.EnvironmentSpecularScale = 0.7
+        isRtxEnabled = true -- Изменяем состояние на включено
+    else
+        -- Вернуть настройки обратно
+        Lighting.Technology = Enum.Technology.ShadowMap -- Или другое значение по умолчанию
+        Lighting.Ambient = Color3.fromRGB(70, 70, 70) -- Белый цвет по умолчанию
+        Lighting.OutdoorAmbient = Color3.fromRGB(0, 0, 0) -- Белый цвет по умолчанию
+        Lighting.ShadowSoftness = 0 -- Значение по умолчанию
+        Lighting.EnvironmentDiffuseScale = 1 -- Значение по умолчанию
+        Lighting.EnvironmentSpecularScale = 0.425 -- Значение по умолчанию
+        isRtxEnabled = false -- Изменяем состояние на выключено
+    end
+end
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
