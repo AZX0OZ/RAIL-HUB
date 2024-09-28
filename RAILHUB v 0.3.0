@@ -50,7 +50,7 @@ local Section = Tab:AddSection({
 Tab:AddButton({
 	Name = "склад",
 	Callback = function()
-      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(623.0984497070312, 3.999999523162842, -697.6439208984375)
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(106.91151428222656, 3.2501282691955566, 113.99207305908203)
   	end    
 })
 
@@ -58,7 +58,7 @@ Tab:AddButton({
 Tab:AddButton({
 	Name = "задание",
 	Callback = function()
-      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(106.91151428222656, 3.2501282691955566, 113.99207305908203)
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(623.0984497070312, 3.999999523162842, -697.6439208984375)
   	end    
 })
 
@@ -152,6 +152,18 @@ Tab:AddButton({
       	    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1196.45837, -7.10957336, -2100.12256)
   	end    
 })
+
+
+
+
+
+
+
+
+
+
+
+
 
 -- Секция-------------------------------------------------------------------------------------------------
 local Tab = Window:MakeTab({
@@ -256,23 +268,131 @@ local Section = Tab:AddSection({
 Tab:AddSlider({
     Name = "Скорость",
     Min = 0,
-    Max = 40,
-    Default = 12,
+    Max = 5,
+    Default = 0,
     Color = Color3.fromRGB(56, 255, 0),
-    Increment = 1,
+    Increment = 0.1,
     ValueName = "Скорость",
     Callback = function(Value)
-        local player = game.Players.LocalPlayer
-        -- Check if the character exists and has a Humanoid
-        if player.Character and player.Character:FindFirstChild("Humanoid") then
-            player.Character.Humanoid.WalkSpeed = Value
+        getgenv().TpWalking = true
+        getgenv().Speed = Value
+
+        local player = game:GetService("Players").LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait() -- Wait for the character to be available
+        local humanoid = character:FindFirstChildWhichIsA("Humanoid")
+        
+        local RunService = game:GetService("RunService")
+        
+        -- Ensure the loop only runs if humanoid exists
+        if humanoid then
+            RunService.Heartbeat:Connect(function()
+                if getgenv().TpWalking and character and humanoid and humanoid.Parent then
+                    -- If the player is moving, apply speed
+                    if humanoid.MoveDirection.Magnitude > Value then
+                        character:TranslateBy(humanoid.MoveDirection * getgenv().Speed * RunService.Heartbeat:Wait() * Value)
+                    end
+                end
+            end)
         else
-            -- Optionally, you could handle the case where the character is not loaded
-            player.CharacterAdded:Wait() -- Wait for the character to be added
-            player.Character.Humanoid.WalkSpeed = Value
-        end
-    end    
+            warn("Humanoid not found!")
+        end 
+    end  
 })
+
+
+
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "Прыжок"
+})
+
+Tab:AddSlider({
+    Name = "Сила прыжка",
+    Min = 1,
+    Max = 60,
+    Default = 45,
+    Color = Color3.fromRGB(56, 255, 0),
+    Increment = 1,
+ValueName = "Сила прыжка",
+Callback = function(Value)
+    local player = game.Players.LocalPlayer
+    
+    -- Check if the character exists and has a Humanoid
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.JumpPower = Value
+    else
+        -- Wait for the character to be added
+        player.CharacterAdded:Wait()
+        -- After the Character is added, check again for the Humanoid
+        local character = player.Character
+        if character and character:FindFirstChild("Humanoid") then
+            character.Humanoid.JumpPower = Value
+        end
+    end
+end
+})
+
+
+
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "Бесконечные прыжки"
+})
+
+Tab:AddToggle({
+	Name = "Бесконечные прыжки",
+	Default = false,
+	Callback = function(Value)
+local Player = game:GetService('Players').LocalPlayer
+local UIS = game:GetService('UserInputService')
+
+-- Variable to control jump height functionality
+_G.JumpHeight = 50
+_G.IsJumpEnabled = Value -- This variable acts as a toggle
+
+function Action(Object, Function)
+    if Object ~= nil then
+        Function(Object)
+    end
+end
+
+-- Function to toggle jump functionality
+function ToggleJump()
+    _G.IsJumpEnabled = not _G.IsJumpEnabled
+    print("Jump functionality is now: " .. tostring(_G.IsJumpEnabled))
+end
+
+-- Connect the space key to the jump increase
+UIS.InputBegan:connect(function(UserInput)
+    if UserInput.UserInputType == Enum.UserInputType.Keyboard then
+        -- Check if the Space key is pressed
+        if UserInput.KeyCode == Enum.KeyCode.Space then
+            Action(Player.Character.Humanoid, function(self)
+                -- Only apply jump height if the toggle is enabled
+                if _G.IsJumpEnabled and (self:GetState() == Enum.HumanoidStateType.Jumping or self:GetState() == Enum.HumanoidStateType.Freefall) then
+                    Action(self.Parent.HumanoidRootPart, function(rootPart)
+                        rootPart.Velocity = Vector3.new(0, _G.JumpHeight, 0)
+                    end)
+                end
+            end)
+        end
+        
+        -- Check if the 'T' key is pressed to toggle jump functionality
+        if UserInput.KeyCode == Enum.KeyCode.T then
+            ToggleJump()
+        end
+    end
+end)
+	end    
+})
+
+
+
+
+
+
+
+
 
 
 -- Подсекция
@@ -558,6 +678,11 @@ Tab:AddButton({
 end
 })
 
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "Другое"
+})
+
 -- Кнопка
 Tab:AddButton({
     Name = "Fps boost",
@@ -702,15 +827,15 @@ local Section = Tab:AddSection({
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "Последнее обновление : 28.09.2024!"
+	Name = "Последнее обновление : 29.09.2024!"
 })
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "v 0.3.1!"
+	Name = "v 0.3.3!"
 })
 
-
+OrionLib:Init()
 
 
 
