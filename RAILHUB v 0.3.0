@@ -88,7 +88,7 @@ Tab:AddButton({
 Tab:AddButton({
 	Name = "КПП-2",
 	Callback = function()
-      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2096.35595703125, 2.999999523162842, 93.45025634765625)
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1305.15637, 16.7970123, -66.1204681)
   	end    
 })
 
@@ -140,7 +140,18 @@ Tab:AddButton({
   	end    
 })
 
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "AFK"
+})
 
+-- Кнопка
+Tab:AddButton({
+	Name = "AFK зона",
+	Callback = function()
+      	    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1196.45837, -7.10957336, -2100.12256)
+  	end    
+})
 
 -- Секция-------------------------------------------------------------------------------------------------
 local Tab = Window:MakeTab({
@@ -154,16 +165,7 @@ local Section = Tab:AddSection({
 	Name = "AFK"
 })
 
--- Кнопка
-Tab:AddButton({
-	Name = "!",
-	Callback = function()
-      	    
-  	end    
-})
-
-
-local isAFK = false  -- Инициализируем переменную isAFK
+local isAFK = false  -- Initialize the isAFK variable
 
 Tab:AddToggle({
     Name = "AFK MOD (test)",
@@ -171,17 +173,22 @@ Tab:AddToggle({
     Callback = function(Value)
         local VU = game:GetService("VirtualUser")
         
-        isAFK = Value  -- Устанавливаем значение isAFK на основе чекбокса
+        isAFK = Value  -- Set the isAFK value based on the toggle
 
         if isAFK then
-            while isAFK do  -- Зацикливаем до тех пор, пока isAFK истинно
-                wait(300)  -- Можно изменить на нужный интервал ожидания.
-                VU:CaptureController()
-                VU:ClickButton1(Vector2.new())
-            end
+            -- Start a new thread for handling AFK
+            spawn(function()
+                while isAFK do  -- Loop as long as isAFK is true
+                    wait(300)  -- Adjust this wait time as needed
+                    VU:CaptureController()
+                    VU:ClickButton1(Vector2.new())  -- Simulate mouse click
+                    print(".")  -- Print a dot to the console each time it clicks
+                end
+            end)
         end
     end
 })
+
 
 -- Подсекция
 local Section = Tab:AddSection({
@@ -189,7 +196,7 @@ local Section = Tab:AddSection({
 })
 
 Tab:AddSlider({
-	Name = "Fov (test)",
+	Name = "Fov (не работает)",
 	Min = 10,
 	Max = 120,
 	Default = 70,
@@ -226,58 +233,50 @@ Tab:AddSlider({
     Increment = 1,
     ValueName = "Скорость",
     Callback = function(Value)
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+        local player = game.Players.LocalPlayer
+        -- Check if the character exists and has a Humanoid
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid.WalkSpeed = Value
+        else
+            -- Optionally, you could handle the case where the character is not loaded
+            player.CharacterAdded:Wait() -- Wait for the character to be added
+            player.Character.Humanoid.WalkSpeed = Value
+        end
     end    
 })
+
 
 -- Подсекция
 local Section = Tab:AddSection({
 	Name = "Hitbox"
 })
 
--- Кнопка
-Tab:AddButton({
-    Name = "BigHitbox",
-    Callback = function()
-        _G.Size = 15
-        _G.Disabled = true
-
-        game:GetService('RunService').RenderStepped:Connect(function()
-            if _G.Disabled then
-                for _, player in pairs(game:GetService('Players'):GetPlayers()) do
-                    if player.Name ~= game:GetService('Players').LocalPlayer.Name then
-                        local character = player.Character
-                        if character and character:FindFirstChild("HumanoidRootPart") then
-                            local humanoidRootPart = character.HumanoidRootPart
-                            pcall(function()
-                                humanoidRootPart.Size = Vector3.new(_G.Size, _G.Size, _G.Size)
-                                humanoidRootPart.Transparency = 0.9
-                                humanoidRootPart.BrickColor = BrickColor.new("Really red")
-                                humanoidRootPart.Material = Enum.Material.Neon
-                                humanoidRootPart.CanCollide = false
-                            end)
-                        end
-                    end
-                end
-            end
-        end)
-    end
-})
+local lastUpdateTime = 0
+local updateInterval = 0.1 -- Update every 0.1 seconds (10 times per second)
 
 Tab:AddSlider({
     Name = "Hitbox",
-    Min = 0,
+    Min = 2,
     Max = 60,
-    Default = 0,
-    Color = Color3.fromRGB(255, 255, 255),
+    Default = 2,
+    Color = Color3.fromRGB(161, 165, 162),
     Increment = 1,
     ValueName = "Hitbox",
     Callback = function(Value)
         _G.Size = Value
         _G.Disabled = true
 
-        game:GetService('RunService').RenderStepped:Connect(function()
-            if _G.Disabled then
+        -- Clear any previous connections to avoid multiple connections stacking
+        if _G.RenderSteppedConnection then
+            _G.RenderSteppedConnection:Disconnect()
+        end
+
+        _G.RenderSteppedConnection = game:GetService('RunService').RenderStepped:Connect(function()
+            local currentTime = tick()
+
+            if _G.Disabled and (currentTime - lastUpdateTime >= updateInterval) then
+                lastUpdateTime = currentTime -- Update the time of the last update
+
                 for _, player in pairs(game:GetService('Players'):GetPlayers()) do
                     if player.Name ~= game:GetService('Players').LocalPlayer.Name then
                         local character = player.Character
@@ -286,7 +285,7 @@ Tab:AddSlider({
                             pcall(function()
                                 humanoidRootPart.Size = Vector3.new(_G.Size, _G.Size, _G.Size)
                                 humanoidRootPart.Transparency = 0.9
-                                humanoidRootPart.BrickColor = BrickColor.new("Really red")
+                                humanoidRootPart.BrickColor = BrickColor.new("Grey")
                                 humanoidRootPart.Material = Enum.Material.Neon
                                 humanoidRootPart.CanCollide = false
                             end)
@@ -297,6 +296,7 @@ Tab:AddSlider({
         end)
     end
 })
+
 
 -- Подсекция
 local Section = Tab:AddSection({
@@ -640,14 +640,46 @@ local Lighting = game:GetService("Lighting")
 end
 })
 
+---------------------------------------------------------------------------------------------------
+local Tab = Window:MakeTab({
+	Name = "Разное",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
 
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "Infinite Yield"
+})
 
+Tab:AddButton({
+	Name = "Infinite Yield",
+	Callback = function()
+      		loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+  	end    
+})
 
+---------------------------------------------------------------------------------------------------
+local Tab = Window:MakeTab({
+	Name = "Информация",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
 
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "discord  =  @sree2246 Писать по поводу багов"
+})
 
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "Последнее обновление : 28.09.2024!"
+})
 
-
-
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "v 0.3.0!"
+})
 
 
 
