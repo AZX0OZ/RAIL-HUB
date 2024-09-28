@@ -707,7 +707,7 @@ local Section = Tab:AddSection({
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "v 0.3.0!"
+	Name = "v 0.3.1!"
 })
 
 
