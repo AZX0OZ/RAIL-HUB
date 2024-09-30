@@ -230,7 +230,7 @@ Tab:AddSlider({
 
 -- Function to reset the FOV when the right mouse button is released
 local function onRightMouseButtonReleased()
-    wait(0.8) -- Wait for 0.5 seconds
+    wait(1) -- Wait for 0.5 seconds
     local player = game.Players.LocalPlayer
     local camera = workspace.CurrentCamera
 
@@ -503,6 +503,37 @@ Mouse.Target:Destroy()
 end)
 end
 })
+
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "admin-gun"
+})
+
+-- Кнопка (Button)
+Tab:AddButton({
+    Name = "admin-gun (визуально)",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        
+        -- Function to clone tools from a specified storage
+        local function cloneTools(storage)
+            for _, item in pairs(storage:GetChildren()) do
+                print("Found: " .. item.Name) -- Display the name of the found item
+                if item:IsA('Tool') or item:IsA('HopperBin') then
+                    print("Copying: " .. item.Name) -- Display the name of the item being copied
+                    item:Clone().Parent = player:FindFirstChildOfClass("Backpack")
+                end
+            end
+        end
+
+        -- Clone tools from Lighting (if necessary)
+        cloneTools(game.Lighting)
+        
+        -- Clone tools from ReplicatedStorage
+        cloneTools(game.ReplicatedStorage)
+    end
+})
+
 
 ---------------------------------------------------------------------------------------------------
 local Tab = Window:MakeTab({
@@ -827,23 +858,12 @@ local Section = Tab:AddSection({
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "Последнее обновление : 29.09.2024!"
+	Name = "Последнее обновление : 30.09.2024!"
 })
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "v 0.3.3!"
+	Name = "v 0.3.4!"
 })
 
 OrionLib:Init()
-
-
-
-
-
-
-
-
-
-
-
