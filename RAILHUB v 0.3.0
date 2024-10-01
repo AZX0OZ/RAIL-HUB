@@ -853,17 +853,24 @@ local Tab = Window:MakeTab({
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "discord  =  @sree2246 Писать по поводу багов"
-})
-
--- Подсекция
-local Section = Tab:AddSection({
 	Name = "Последнее обновление : 30.09.2024!"
 })
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "v 0.3.4!"
+	Name = "v 0.3.5!"
 })
+
+local textToCopy = "https://discord.gg/bvEQEUuCFQ" -- Замените этот текст на нужный вам.
+
+Tab:AddButton({
+    Name = "Discord Link",
+    Callback = function()
+        -- Копирование текста в буфер обмена
+        setclipboard(textToCopy)
+        print("Ссылка была скопирована: " .. textToCopy) -- Печатает сообщение в консоль для подтверждения
+    end    
+})
+
 
 OrionLib:Init()
