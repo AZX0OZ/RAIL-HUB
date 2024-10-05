@@ -180,24 +180,10 @@ local Section = Tab:AddSection({
 local isAFK = false  -- Initialize the isAFK variable
 
 Tab:AddToggle({
-    Name = "AFK MOD (test)",
+    Name = "AFK MOD (не работает)",
     Default = false,
     Callback = function(Value)
-        local VU = game:GetService("VirtualUser")
-        
-        isAFK = Value  -- Set the isAFK value based on the toggle
 
-        if isAFK then
-            -- Start a new thread for handling AFK
-            spawn(function()
-                while isAFK do  -- Loop as long as isAFK is true
-                    wait(300)  -- Adjust this wait time as needed
-                    VU:CaptureController()
-                    VU:ClickButton1(Vector2.new())  -- Simulate mouse click
-                    print(".")  -- Print a dot to the console each time it clicks
-                end
-            end)
-        end
     end
 })
 
@@ -459,6 +445,61 @@ Tab:AddButton({
             loadstring(game:HttpGet('https://raw.githubusercontent.com/Lucasfin000/SpaceHub/main/UESP'))()
 end
 })
+
+-- Кнопка
+Tab:AddButton({
+    Name = "Esp Drop (test)",
+    Callback = function()
+        local Workspace = game:GetService("Workspace")
+        local CaseDrops = Workspace:FindFirstChild("CaseDrops")
+
+        -- Функция для создания ESP
+        local function createESP(model)
+            local unionPart = model:FindFirstChild("Union") -- Проверяем наличие части с именем "Union"
+
+            if unionPart and unionPart:IsA("BasePart") and unionPart.Transparency == 0 then
+                local billboardGui = Instance.new("BillboardGui")
+                billboardGui.Size = UDim2.new(0, 100, 0, 50)
+                billboardGui.Adornee = unionPart -- Прикрепляем к части Union
+                billboardGui.AlwaysOnTop = true -- Делает GUI всегда на переднем плане
+                billboardGui.Parent = model
+
+                local textLabel = Instance.new("TextLabel")
+                textLabel.Size = UDim2.new(1, 0, 1, 0)
+                textLabel.BackgroundTransparency = 1
+                textLabel.Text = model.Name
+                textLabel.TextColor3 = Color3.new(1, 0, 0) -- Красный цвет текста
+                textLabel.Parent = billboardGui
+
+                -- Проверка прозрачности каждые 1 секунду
+                while wait(1) do
+                    if unionPart.Transparency == 1 then
+                        billboardGui:Destroy() -- Удаляем BillboardGui, если Transparency = 1
+                        break -- Прерываем цикл, так как BillboardGui был удален
+                    end
+                end
+            end
+        end
+
+        -- Проверка наличия папки CaseDrops и добавление ESP для всех моделей
+        if CaseDrops then
+            for _, model in ipairs(CaseDrops:GetChildren()) do
+                if model:IsA("Model") then
+                    createESP(model)
+                end
+            end
+
+            -- Подписка на событие, чтобы добавлять ESP для новых моделей
+            CaseDrops.ChildAdded:Connect(function(child)
+                if child:IsA("Model") then
+                    createESP(child)
+                end
+            end)   
+        end -- Закрывающая скобка для проверки CaseDrops
+    end -- Закрывающая скобка для Callback функции
+})
+
+
 
 -- Подсекция
 local Section = Tab:AddSection({
@@ -858,7 +899,7 @@ local Section = Tab:AddSection({
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "v 0.3.6!"
+	Name = "v 0.3.7!"
 })
 
 local textToCopy = "https://discord.gg/bvEQEUuCFQ" -- Замените этот текст на нужный вам.
