@@ -78,6 +78,30 @@ Tab:AddButton({
 
 -- Кнопка
 Tab:AddButton({
+	Name = "Пост МВД",
+	Callback = function()
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1880.78711, 3.02372599, -79.1625366)
+  	end    
+})
+
+-- Кнопка
+Tab:AddButton({
+	Name = "Заправка",
+	Callback = function()
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1611.48291, 3.68000031, 193.309387)
+  	end    
+})
+
+-- Кнопка
+Tab:AddButton({
+	Name = "Пост ФСБ",
+	Callback = function()
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2594.14526, 2.96875048, -213.897064)
+  	end    
+})
+
+-- Кнопка
+Tab:AddButton({
 	Name = "КПП-1",
 	Callback = function()
       		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(345.38934326171875, 3.099998950958252, 3.619844436645508)
@@ -177,15 +201,55 @@ local Section = Tab:AddSection({
 	Name = "AFK"
 })
 
-local isAFK = false  -- Initialize the isAFK variable
+
+local isAutoClicking = false -- Переменная для отслеживания состояния авто-клика
 
 Tab:AddToggle({
-    Name = "AFK MOD (не работает)",
+    Name = "AFK MOD (test)",
     Default = false,
     Callback = function(Value)
-
+        isAutoClicking = Value -- Устанавливаем состояние авто-клика в зависимости от переключателя
+        
+        if isAutoClicking then
+            -- Если переключатель включен, запускаем авто-клик
+            autoClick()
+        end
     end
 })
+
+-- Получение необходимых сервисов
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Функция для генерации случайного времени между 1 и 5 минутами
+local function getRandomClickDelay()
+    return math.random(60, 360) -- Случайное время от 60 до 300 секунд
+end
+
+-- Функция для клика в месте курсора
+local function autoClick()
+    while isAutoClicking do -- Цикл продолжается, пока авто-клик включен
+        local mouse = player:GetMouse()
+        wait(getRandomClickDelay()) -- Ждём случайное время перед кликом
+        
+        -- Получаем позицию курсора
+        local cursorPosition = mouse.Hit.Position
+        
+        -- Эмулируем клик
+        UserInputService:SendInputEvent({
+            InputType = Enum.InputType.MouseButton1,
+            UserInputState = Enum.UserInputState.Begin,
+            Position = Vector2.new(cursorPosition.X, cursorPosition.Y)
+        })
+        UserInputService:SendInputEvent({
+            InputType = Enum.InputType.MouseButton1,
+            UserInputState = Enum.UserInputState.End,
+            Position = Vector2.new(cursorPosition.X, cursorPosition.Y)
+        })
+    end
+end
+
 
 
 -- Подсекция
@@ -251,39 +315,48 @@ local Section = Tab:AddSection({
 	Name = "Скорость"
 })
 
+-- Create a Slider for Speed Adjustment
 Tab:AddSlider({
     Name = "Скорость",
     Min = 0,
-    Max = 5,
+    Max = 200,
     Default = 0,
     Color = Color3.fromRGB(56, 255, 0),
-    Increment = 0.1,
+    Increment = 0.5,
     ValueName = "Скорость",
     Callback = function(Value)
-        getgenv().TpWalking = true
-        getgenv().Speed = Value
-
-        local player = game:GetService("Players").LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait() -- Wait for the character to be available
-        local humanoid = character:FindFirstChildWhichIsA("Humanoid")
-        
-        local RunService = game:GetService("RunService")
-        
-        -- Ensure the loop only runs if humanoid exists
-        if humanoid then
-            RunService.Heartbeat:Connect(function()
-                if getgenv().TpWalking and character and humanoid and humanoid.Parent then
-                    -- If the player is moving, apply speed
-                    if humanoid.MoveDirection.Magnitude > Value then
-                        character:TranslateBy(humanoid.MoveDirection * getgenv().Speed * RunService.Heartbeat:Wait() * Value)
-                    end
-                end
-            end)
-        else
-            warn("Humanoid not found!")
-        end 
+        getgenv().Speed = Value -- Update the global speed based on slider value
     end  
 })
+
+-- Ensure that the player and their character are available
+local player = game:GetService("Players").LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:FindFirstChildWhichIsA("Humanoid")
+
+-- Global variables for teleport walking
+getgenv().TpWalking = true
+getgenv().Speed = 0 -- Initialize with default speed from the slider
+
+local RunService = game:GetService("RunService")
+
+-- Ensure the loop only runs if humanoid exists
+if humanoid then
+    RunService.Heartbeat:Connect(function()
+        -- Check if teleport walking is enabled and the humanoid exists
+        if getgenv().TpWalking and character and humanoid and humanoid.Parent then
+            -- If the player is moving, apply speed
+            if humanoid.MoveDirection.Magnitude > 0 then
+                -- Calculate the movement vector based on speed
+                local moveDirection = humanoid.MoveDirection.unit * getgenv().Speed * RunService.Heartbeat:Wait()
+                character:TranslateBy(moveDirection) -- Teleport the character
+            end
+        end
+    end)
+else
+    warn("Humanoid not found!")
+end
+
 
 
 
@@ -297,25 +370,38 @@ Tab:AddSlider({
     Min = 1,
     Max = 60,
     Default = 45,
-    Color = Color3.fromRGB(56, 255, 0),
+    Color = Color3.fromRGB(0, 0, 255),
     Increment = 1,
-ValueName = "Сила прыжка",
-Callback = function(Value)
-    local player = game.Players.LocalPlayer
-    
-    -- Check if the character exists and has a Humanoid
-    if player.Character and player.Character:FindFirstChild("Humanoid") then
-        player.Character.Humanoid.JumpPower = Value
-    else
-        -- Wait for the character to be added
-        player.CharacterAdded:Wait()
-        -- After the Character is added, check again for the Humanoid
-        local character = player.Character
-        if character and character:FindFirstChild("Humanoid") then
-            character.Humanoid.JumpPower = Value
+    ValueName = "Сила прыжка",
+    Callback = function(Value)
+        local player = game.Players.LocalPlayer
+
+        -- Function to set jump power
+        local function setJumpPower(jumpPower)
+            if player.Character and player.Character:FindFirstChild("Humanoid") then
+                player.Character.Humanoid.JumpPower = jumpPower
+            end
         end
+
+        -- Set initial jump power
+        setJumpPower(Value)
+        
+        -- Create a coroutine for continuous checking
+        coroutine.wrap(function()
+            while true do
+                wait(0.1) -- Check every 0.1 seconds
+                if player.Character and player.Character:FindFirstChild("Humanoid") then
+                    local currentJumpPower = player.Character.Humanoid.JumpPower
+                    if currentJumpPower ~= Value then
+                        setJumpPower(Value) -- Update to the slider value if different
+                    end
+                else
+                    -- Wait for the character to be added
+                    player.CharacterAdded:Wait()
+                end
+            end
+        end)() -- Immediately invoke the coroutine
     end
-end
 })
 
 
@@ -371,12 +457,6 @@ UIS.InputBegan:connect(function(UserInput)
 end)
 	end    
 })
-
-
-
-
-
-
 
 
 
@@ -554,26 +634,33 @@ local Section = Tab:AddSection({
 Tab:AddButton({
     Name = "admin-gun (визуально)",
     Callback = function()
-        local player = game.Players.LocalPlayer
-        
-        -- Function to clone tools from a specified storage
-        local function cloneTools(storage)
-            for _, item in pairs(storage:GetChildren()) do
-                print("Found: " .. item.Name) -- Display the name of the found item
-                if item:IsA('Tool') or item:IsA('HopperBin') then
-                    print("Copying: " .. item.Name) -- Display the name of the item being copied
-                    item:Clone().Parent = player:FindFirstChildOfClass("Backpack")
+        -- Получаем текущего игрока
+        local player = game.Players.LocalPlayer -- Для LocalScript
+
+        -- Скрипт для добавления инструментов из ReplicatedStorage в инвентарь игрока
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+        -- Функция для добавления инструментов в инвентарь игрока
+        local function giveToolsToPlayer(player)
+            local toolsFolder = ReplicatedStorage:FindFirstChild("Tools")
+            if toolsFolder then
+                for _, tool in pairs(toolsFolder:GetChildren()) do
+                    if tool:IsA("Tool") then
+                        -- Клонируем инструмент и добавляем его в инвентарь игрока
+                        local clonedTool = tool:Clone()
+                        clonedTool.Parent = player.Backpack
+                    end
                 end
+            else
+                warn("Папка Tools не найдена в ReplicatedStorage.")
             end
         end
-
-        -- Clone tools from Lighting (if necessary)
-        cloneTools(game.Lighting)
         
-        -- Clone tools from ReplicatedStorage
-        cloneTools(game.ReplicatedStorage)
+        -- Вызываем функцию для добавления инструментов
+        giveToolsToPlayer(player)
     end
 })
+
 
 
 ---------------------------------------------------------------------------------------------------
@@ -714,9 +801,9 @@ Tab:AddButton({
         
         if treesFolder then
             treesFolder:Destroy() -- Удаляем папку "Trees"
-            print("Папка 'Trees' была удалена.") 
+            print(" ") 
         else
-            print("Папка 'Trees' не найдена в папке 'map'.") 
+            print(" ") 
         end
 
         -- Удаляем все модели "Tree" из папки "map"
@@ -728,7 +815,7 @@ Tab:AddButton({
         end
 
     else
-        print("Папка 'map' не найдена в Workspace.") 
+        print(" ") 
     end
 end
 })
@@ -746,7 +833,7 @@ Tab:AddButton({
         print("Объект '" .. child.Name .. "' был удален из Lighting.") -- Выводим сообщение о удалении
     end
 
-    print("Туман был удалён")
+    print(" ")
 end
 })
 
@@ -894,12 +981,12 @@ local Tab = Window:MakeTab({
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "Последнее обновление : 5.10.2024!"
+	Name = "Последнее обновление : 8.10.2024!"
 })
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "v 0.3.7!"
+	Name = "v 0.3.9!"
 })
 
 local textToCopy = "https://discord.gg/bvEQEUuCFQ" -- Замените этот текст на нужный вам.
