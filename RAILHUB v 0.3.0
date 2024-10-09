@@ -35,6 +35,49 @@ local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shl
 -- Создать окно UI
 local Window = OrionLib:MakeWindow({Name = "RAILhub     Army Roblox RP RU", HidePremium = false, IntroText = "RAILhub", SaveConfig = false, ConfigFolder = "OrionTest"})
 
+---------------------------------------------------------------------------------------------------
+local Tab = Window:MakeTab({
+	Name = "Информация",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "Последнее обновление : 9.10.2024!"
+})
+
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "v 0.4.1!"
+})
+
+local textToCopy = "https://discord.gg/bvEQEUuCFQ" -- Замените этот текст на нужный вам.
+
+Tab:AddButton({
+    Name = "Discord Link",
+    Callback = function()
+        -- Копирование текста в буфер обмена
+        setclipboard(textToCopy)
+        print("Ссылка была скопирована: " .. textToCopy) -- Печатает сообщение в консоль для подтверждения
+    end    
+})
+
+local textToCopy = "https://t.me/+FizXrGSg3B9jZTRi" -- Замените этот текст на нужный вам.
+
+Tab:AddButton({
+    Name = "Telegram Link",
+    Callback = function()
+        -- Копирование текста в буфер обмена
+        setclipboard(textToCopy)
+        print("Ссылка была скопирована: " .. textToCopy) -- Печатает сообщение в консоль для подтверждения
+    end    
+})
+
+
+
+
+
 -- Секция
 local Tab = Window:MakeTab({
 	Name = "Тп",
@@ -1137,44 +1180,6 @@ Tab:AddButton({
   	end    
 })
 
----------------------------------------------------------------------------------------------------
-local Tab = Window:MakeTab({
-	Name = "Информация",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
-})
-
--- Подсекция
-local Section = Tab:AddSection({
-	Name = "Последнее обновление : 9.10.2024!"
-})
-
--- Подсекция
-local Section = Tab:AddSection({
-	Name = "v 0.4.1!"
-})
-
-local textToCopy = "https://discord.gg/bvEQEUuCFQ" -- Замените этот текст на нужный вам.
-
-Tab:AddButton({
-    Name = "Discord Link",
-    Callback = function()
-        -- Копирование текста в буфер обмена
-        setclipboard(textToCopy)
-        print("Ссылка была скопирована: " .. textToCopy) -- Печатает сообщение в консоль для подтверждения
-    end    
-})
-
-local textToCopy = "https://t.me/+FizXrGSg3B9jZTRi" -- Замените этот текст на нужный вам.
-
-Tab:AddButton({
-    Name = "Telegram Link",
-    Callback = function()
-        -- Копирование текста в буфер обмена
-        setclipboard(textToCopy)
-        print("Ссылка была скопирована: " .. textToCopy) -- Печатает сообщение в консоль для подтверждения
-    end    
-})
 
 
  
