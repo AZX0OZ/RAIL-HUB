@@ -997,7 +997,7 @@ end
 
 
 Tab:AddToggle({
-    Name = "Небо",
+    Name = "вкл-выкл",
     Default = false,
     Callback = function(Value)
         if Value then
