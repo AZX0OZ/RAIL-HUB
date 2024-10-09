@@ -184,6 +184,99 @@ Tab:AddButton({
 
 
 
+-- Секция-------------------------------------------------------------------------------------------------
+local Tab = Window:MakeTab({
+	Name = "Pvp",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "Hitbox"
+})
+
+local lastUpdateTime = 0
+local updateInterval = 0.1 -- Update every 0.1 seconds (10 times per second)
+
+Tab:AddSlider({
+    Name = "Hitbox",
+    Min = 2,
+    Max = 60,
+    Default = 2,
+    Color = Color3.fromRGB(161, 165, 162),
+    Increment = 1,
+    ValueName = "Hitbox",
+    Callback = function(Value)
+        _G.Size = Value
+        _G.Disabled = true
+
+        -- Clear any previous connections to avoid multiple connections stacking
+        if _G.RenderSteppedConnection then
+            _G.RenderSteppedConnection:Disconnect()
+        end
+
+        _G.RenderSteppedConnection = game:GetService('RunService').RenderStepped:Connect(function()
+            local currentTime = tick()
+
+            if _G.Disabled and (currentTime - lastUpdateTime >= updateInterval) then
+                lastUpdateTime = currentTime -- Update the time of the last update
+
+                for _, player in pairs(game:GetService('Players'):GetPlayers()) do
+                    if player.Name ~= game:GetService('Players').LocalPlayer.Name then
+                        local character = player.Character
+                        if character and character:FindFirstChild("HumanoidRootPart") then
+                            local humanoidRootPart = character.HumanoidRootPart
+                            pcall(function()
+                                humanoidRootPart.Size = Vector3.new(_G.Size, _G.Size, _G.Size)
+                                humanoidRootPart.Transparency = 0.9
+                                humanoidRootPart.BrickColor = BrickColor.new("Grey")
+                                humanoidRootPart.Material = Enum.Material.Neon
+                                humanoidRootPart.CanCollide = false
+                            end)
+                        end
+                    end
+                end
+            end
+        end)
+    end
+})
+
+
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "Esp"
+})
+
+-- Кнопка
+Tab:AddButton({
+    Name = "Esp",
+    Callback = function()
+            loadstring(game:HttpGet('https://raw.githubusercontent.com/Lucasfin000/SpaceHub/main/UESP'))()
+end
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -224,7 +317,7 @@ local player = Players.LocalPlayer
 
 -- Функция для генерации случайного времени между 1 и 5 минутами
 local function getRandomClickDelay()
-    return math.random(60, 360) -- Случайное время от 60 до 300 секунд
+    return math.random(60, 220) -- Случайное время от 60 до 300 секунд
 end
 
 -- Функция для клика в месте курсора
@@ -382,7 +475,7 @@ Tab:AddSlider({
     Min = 1,
     Max = 60,
     Default = 45,
-    Color = Color3.fromRGB(0, 0, 255),
+    Color = Color3.fromRGB(66, 133, 180),
     Increment = 1,
     ValueName = "Сила прыжка",
     Callback = function(Value)
@@ -475,76 +568,14 @@ end)
 })
 
 
-
-
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "Hitbox"
+	Name = "Drop"
 })
 
-local lastUpdateTime = 0
-local updateInterval = 0.1 -- Update every 0.1 seconds (10 times per second)
-
-Tab:AddSlider({
-    Name = "Hitbox",
-    Min = 2,
-    Max = 60,
-    Default = 2,
-    Color = Color3.fromRGB(161, 165, 162),
-    Increment = 1,
-    ValueName = "Hitbox",
-    Callback = function(Value)
-        _G.Size = Value
-        _G.Disabled = true
-
-        -- Clear any previous connections to avoid multiple connections stacking
-        if _G.RenderSteppedConnection then
-            _G.RenderSteppedConnection:Disconnect()
-        end
-
-        _G.RenderSteppedConnection = game:GetService('RunService').RenderStepped:Connect(function()
-            local currentTime = tick()
-
-            if _G.Disabled and (currentTime - lastUpdateTime >= updateInterval) then
-                lastUpdateTime = currentTime -- Update the time of the last update
-
-                for _, player in pairs(game:GetService('Players'):GetPlayers()) do
-                    if player.Name ~= game:GetService('Players').LocalPlayer.Name then
-                        local character = player.Character
-                        if character and character:FindFirstChild("HumanoidRootPart") then
-                            local humanoidRootPart = character.HumanoidRootPart
-                            pcall(function()
-                                humanoidRootPart.Size = Vector3.new(_G.Size, _G.Size, _G.Size)
-                                humanoidRootPart.Transparency = 0.9
-                                humanoidRootPart.BrickColor = BrickColor.new("Grey")
-                                humanoidRootPart.Material = Enum.Material.Neon
-                                humanoidRootPart.CanCollide = false
-                            end)
-                        end
-                    end
-                end
-            end
-        end)
-    end
-})
-
-
--- Подсекция
-local Section = Tab:AddSection({
-	Name = "Esp"
-})
-
--- Кнопка
+-- Кнопка для создания ESP
 Tab:AddButton({
-    Name = "Esp",
-    Callback = function()
-            loadstring(game:HttpGet('https://raw.githubusercontent.com/Lucasfin000/SpaceHub/main/UESP'))()
-end
-})
-
--- Кнопка
-Tab:AddButton({
-    Name = "Esp Drop (test)",
+    Name = "Esp Drop",
     Callback = function()
         local Workspace = game:GetService("Workspace")
         local CaseDrops = Workspace:FindFirstChild("CaseDrops")
@@ -593,6 +624,46 @@ Tab:AddButton({
             end)   
         end -- Закрывающая скобка для проверки CaseDrops
     end -- Закрывающая скобка для Callback функции
+})
+
+-- Новая кнопка для телепортации к ближайшему дропу с ESP
+Tab:AddButton({
+    Name = "Tп до ближайшего ящика",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+        local Workspace = game:GetService("Workspace")
+        local CaseDrops = Workspace:FindFirstChild("CaseDrops")
+        
+        if CaseDrops then
+            local closestDrop = nil
+            local closestDistance = math.huge
+            
+            -- Поиск ближайшего дропа с ESP
+            for _, model in ipairs(CaseDrops:GetChildren()) do
+                if model:IsA("Model") then
+                    local unionPart = model:FindFirstChild("Union")
+                    if unionPart and unionPart:IsA("BasePart") and unionPart.Transparency == 0 then
+                        local distance = (humanoidRootPart.Position - unionPart.Position).magnitude
+                        if distance < closestDistance then
+                            closestDistance = distance
+                            closestDrop = unionPart
+                        end
+                    end
+                end
+            end
+
+            -- Телепортация к ближайшему дропу, если он найден
+            if closestDrop then
+                humanoidRootPart.CFrame = closestDrop.CFrame + Vector3.new(0, 5, 0) -- Добавляем высоту, чтобы не застрять в модели
+            else
+                print("Поблизасти ненайдены ящики")
+            end
+        else
+            print("Поблизасти ненайдены ящики")
+        end
+    end -- Закрывающая скобка для Callback функции телепортации
 })
 
 
@@ -1080,7 +1151,7 @@ local Section = Tab:AddSection({
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "v 0.4.0!"
+	Name = "v 0.4.1!"
 })
 
 local textToCopy = "https://discord.gg/bvEQEUuCFQ" -- Замените этот текст на нужный вам.
@@ -1157,45 +1228,3 @@ if model then
 else
     print(modelName .. " ")
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
