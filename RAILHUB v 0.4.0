@@ -49,7 +49,7 @@ local Section = Tab:AddSection({
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "v 0.4.1!"
+	Name = "v 0.4.2!"
 })
 
 local textToCopy = "https://discord.gg/bvEQEUuCFQ" -- Замените этот текст на нужный вам.
@@ -966,6 +966,52 @@ Tab:AddButton({
     print(" ")
 end
 })
+
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "небо"
+})
+
+
+-- Добавляем цветовой выбор для неба
+Tab:AddColorpicker({
+    Name = "Цвет облаков",
+    Default = Color3.fromRGB(150, 150, 150),
+    Callback = function(Value)
+        -- Проверяем, есть ли объект Clouds в Terrain
+        local terrain = game.Workspace.Terrain
+        if terrain:FindFirstChild("Clouds") then
+            local clouds = terrain.Clouds
+            
+            -- Устанавливаем цвет облаков
+            clouds.Color = Value -- Изменяем цвет облаков на выбранный
+        end
+    end
+})
+
+-- Проверка на наличие объекта Clouds при инициализации
+local terrain = game.Workspace.Terrain
+if not terrain:FindFirstChild("Clouds") then
+    warn("Объект Clouds не найден в Workspace.Terrain!")
+end
+
+
+Tab:AddToggle({
+    Name = "Небо",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            -- Если переключатель включен, устанавливаем плотность облаков на 1
+            game.Workspace.Terrain.Clouds.Cover = 1
+        else
+            -- Если переключатель выключен, устанавливаем плотность облаков на 0.5
+            game.Workspace.Terrain.Clouds.Cover = 0.5
+        end
+    end    
+})
+
+
+
 
 -- Подсекция
 local Section = Tab:AddSection({
