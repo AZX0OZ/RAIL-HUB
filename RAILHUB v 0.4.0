@@ -337,42 +337,15 @@ local Section = Tab:AddSection({
 	Name = "AFK"
 })
 
-
-
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local backpack = player:WaitForChild("Backpack")
-
-local passportName = "Паспорт" -- Название предмета
-local toggleActive = false -- Переменная для отслеживания состояния тумблера
-local passport = nil -- Переменная для хранения ссылки на предмет
-
--- Функция для получения предмета "Паспорт"
-local function getPassport()
-    passport = backpack:FindFirstChild(passportName)
-end
-
--- Функция для переключения тумблера
-Tab:AddToggle({
+Tab:AddButton({
     Name = "AFK MOD (test)",
-    Default = false,
-    Callback = function(Value)
-        toggleActive = Value
-        if toggleActive then
-            getPassport() -- Получаем паспорт при активации тумблера
-            while toggleActive do
-                if passport then
-                    -- Достаём предмет
-                    passport.Parent = player.Character -- Перемещаем в персонажа
-                    wait(0.000001) -- Ждём 1 секунду
-                    passport.Parent = backpack -- Возвращаем в рюкзак
-                end
-                wait(10) -- Ждём 1 секунду перед следующей итерацией
-            end
-        end
-    end    
+    Callback = function()
+        repeat wait() until game:IsLoaded()
+        game:GetService("Players").LocalPlayer.Idled:Connect(function()
+            game:GetService("VirtualUser"):ClickButton2(Vector2.new())
+        end)
+    end
 })
-
 
 
 -- Получение необходимых сервисов
