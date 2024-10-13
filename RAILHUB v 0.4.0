@@ -44,12 +44,12 @@ local Tab = Window:MakeTab({
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "Последнее обновление : 9.10.2024!"
+	Name = "Последнее обновление : 13.10.2024!"
 })
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "v 0.4.2!"
+	Name = "v 0.4.3!"
 })
 
 local textToCopy = "https://discord.gg/bvEQEUuCFQ" -- Замените этот текст на нужный вам.
@@ -338,20 +338,42 @@ local Section = Tab:AddSection({
 })
 
 
-local isAutoClicking = false -- Переменная для отслеживания состояния авто-клика
 
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+
+local passportName = "Паспорт" -- Название предмета
+local toggleActive = false -- Переменная для отслеживания состояния тумблера
+local passport = nil -- Переменная для хранения ссылки на предмет
+
+-- Функция для получения предмета "Паспорт"
+local function getPassport()
+    passport = backpack:FindFirstChild(passportName)
+end
+
+-- Функция для переключения тумблера
 Tab:AddToggle({
-    Name = "AFK MOD (не работает!)",
+    Name = "AFK MOD (test)",
     Default = false,
     Callback = function(Value)
-        isAutoClicking = Value -- Устанавливаем состояние авто-клика в зависимости от переключателя
-        
-        if isAutoClicking then
-            -- Если переключатель включен, запускаем авто-клик
-            autoClick()
+        toggleActive = Value
+        if toggleActive then
+            getPassport() -- Получаем паспорт при активации тумблера
+            while toggleActive do
+                if passport then
+                    -- Достаём предмет
+                    passport.Parent = player.Character -- Перемещаем в персонажа
+                    wait(0.000001) -- Ждём 1 секунду
+                    passport.Parent = backpack -- Возвращаем в рюкзак
+                end
+                wait(10) -- Ждём 1 секунду перед следующей итерацией
+            end
         end
-    end
+    end    
 })
+
+
 
 -- Получение необходимых сервисов
 local UserInputService = game:GetService("UserInputService")
