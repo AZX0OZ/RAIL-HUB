@@ -341,7 +341,7 @@ local Section = Tab:AddSection({
 local isAutoClicking = false -- Переменная для отслеживания состояния авто-клика
 
 Tab:AddToggle({
-    Name = "AFK MOD (test)",
+    Name = "AFK MOD (не работает!)",
     Default = false,
     Callback = function(Value)
         isAutoClicking = Value -- Устанавливаем состояние авто-клика в зависимости от переключателя
