@@ -166,6 +166,13 @@ Tab:AddButton({
   	end    
 })
 
+Tab:AddButton({
+	Name = "самолет",
+	Callback = function()
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1424.59888, 1363.37061, 421.928558)
+  	end    
+})
+
 -- Кнопка
 Tab:AddButton({
 	Name = "База кантробандистов",
@@ -908,33 +915,39 @@ end
 Tab:AddButton({
     Name = "Удалить зелень",
     Callback = function()
-    -- Получаем папку "map"
-    local mapFolder = game.Workspace:FindFirstChild("map") 
+        -- Запускаем бесконечный цикл
+        while true do
+            -- Получаем папку "map"
+            local mapFolder = game.Workspace:FindFirstChild("map") 
 
-    if mapFolder then
-        -- Удаляем папку "Trees", если она есть
-        local treesFolder = mapFolder:FindFirstChild("Trees") 
-        
-        if treesFolder then
-            treesFolder:Destroy() -- Удаляем папку "Trees"
-            print(" ") 
-        else
-            print(" ") 
-        end
+            if mapFolder then
+                -- Удаляем папку "Trees", если она есть
+                local treesFolder = mapFolder:FindFirstChild("Trees") 
+                
+                if treesFolder then
+                    treesFolder:Destroy() -- Удаляем папку "Trees"
+                    print("Папка 'Trees' была удалена.")
+                else
+                    print("Папка 'Trees' не найдена.")
+                end
 
-        -- Удаляем все модели "Tree" из папки "map"
-        for _, model in pairs(mapFolder:GetChildren()) do
-            if model:IsA("Model") and model.Name == "Tree" then
-                model:Destroy() -- Удаляем модель "Tree"
-                print("Модель 'Tree' была удалена.")
+                -- Удаляем все модели "Tree" из папки "map"
+                for _, model in pairs(mapFolder:GetChildren()) do
+                    if model:IsA("Model") and model.Name == "Tree" then
+                        model:Destroy() -- Удаляем модель "Tree"
+                        print("Модель 'Tree' была удалена.")
+                    end
+                end
+            else
+                print("Папка 'map' не найдена.")
             end
-        end
 
-    else
-        print(" ") 
+            wait(3) -- Ждем 3 секунды перед следующим выполнением
+        end
     end
-end
 })
+
+
 
 -- Кнопка
 Tab:AddButton({
