@@ -336,7 +336,7 @@ local Section = Tab:AddSection({
 })
 
 Tab:AddButton({
-    Name = "AFK MOD (test)",
+    Name = "AFK MOD",
     Callback = function()
         repeat wait() until game:IsLoaded()
         game:GetService("Players").LocalPlayer.Idled:Connect(function()
