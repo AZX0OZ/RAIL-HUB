@@ -1,6 +1,16 @@
--- ds: https://discord.gg/bvEQEUuCFQ
 
--- tg: https://t.me/+FizXrGSg3B9jZTRi
+
+
+
+
+
+
+
+
+
+
+
+
 
  -- ###############            ###           ###   ###              ###          ###   ###        ###   ############                      
  -- ###          ###          #####          ###   ###              ###          ###   ###        ###   ###       ###                         
@@ -1264,3 +1274,52 @@ if model then
 else
     print(modelName .. " ")
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+OrionLib:MakeNotification({
+    Name = "Добро пожаловать, " .. player.Name .. "!",
+    Content = "Присоединяйтесь к нашему discord или telegram для получения уведомлений об обновлениях!",
+    Image = "rbxassetid://4483345998",
+    Time = 10
+})
