@@ -1,5 +1,4 @@
 
-
 -- ds: https://discord.gg/bvEQEUuCFQ
 
 -- tg: https://t.me/+FizXrGSg3B9jZTRi
@@ -329,6 +328,8 @@ local Tab = Window:MakeTab({
 	Name = "Игрок",
 	Icon = "rbxassetid://4483345998",
 	PremiumOnly = false
+})
+
 
 
 
@@ -378,6 +379,7 @@ userInputService.InputEnded:Connect(function(input)
         onRightMouseButtonReleased()
     end
 end)
+
 
 
 
