@@ -1,4 +1,5 @@
 
+
 -- ds: https://discord.gg/bvEQEUuCFQ
 
 -- tg: https://t.me/+FizXrGSg3B9jZTRi
@@ -35,12 +36,12 @@ local Tab = Window:MakeTab({
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "Последнее обновление : 13.10.2024!"
+	Name = "Последнее обновление : 14.10.2024!"
 })
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "v 0.4.3!"
+	Name = "v 0.4.4!"
 })
 
 local textToCopy = "https://discord.gg/bvEQEUuCFQ" -- Замените этот текст на нужный вам.
@@ -616,17 +617,35 @@ Tab:AddButton({
         local Workspace = game:GetService("Workspace")
         local CaseDrops = Workspace:FindFirstChild("CaseDrops")
 
+        -- Уровень звука (от 0 до 1)
+        local soundVolume = 10 -- Замените на нужное значение громкости от 0 до 1
+
         -- Функция для создания ESP
         local function createESP(model)
             local unionPart = model:FindFirstChild("Union") -- Проверяем наличие части с именем "Union"
 
             if unionPart and unionPart:IsA("BasePart") and unionPart.Transparency == 0 then
+                -- Воспроизводим звук
+                local sound = Instance.new("Sound") -- Создаем новый объект Sound
+                sound.SoundId = "rbxassetid://4590656842" -- Замените на ID вашего звука
+                sound.Volume = soundVolume -- Устанавливаем уровень громкости
+                sound.Parent = unionPart -- Устанавливаем родителем Union
+                sound:Play() -- Проигрываем звук
+
+                -- Отправляем уведомление
+                OrionLib:MakeNotification({
+                    Name = "ESP активирован!",
+                    Content = "ESP был активирован для " .. model.Name,
+                    Image = "rbxassetid://4483345998",
+                    Time = 7
+                })
+
                 local billboardGui = Instance.new("BillboardGui")
                 billboardGui.Size = UDim2.new(0, 100, 0, 50)
                 billboardGui.Adornee = unionPart -- Прикрепляем к части Union
                 billboardGui.AlwaysOnTop = true -- Делает GUI всегда на переднем плане
                 billboardGui.Parent = model
-
+                
                 local textLabel = Instance.new("TextLabel")
                 textLabel.Size = UDim2.new(1, 0, 1, 0)
                 textLabel.BackgroundTransparency = 1
@@ -636,8 +655,8 @@ Tab:AddButton({
 
                 -- Проверка прозрачности каждые 1 секунду
                 while wait(1) do
-                    if unionPart.Transparency == 1 then
-                        billboardGui:Destroy() -- Удаляем BillboardGui, если Transparency = 1
+                    if unionPart.Transparency >= 1 then
+                        billboardGui:Destroy() -- Удаляем BillboardGui, если Transparency >= 1
                         break -- Прерываем цикл, так как BillboardGui был удален
                     end
                 end
@@ -657,10 +676,16 @@ Tab:AddButton({
                 if child:IsA("Model") then
                     createESP(child)
                 end
-            end)   
+            end)
+        else
+            warn(" ")
         end -- Закрывающая скобка для проверки CaseDrops
     end -- Закрывающая скобка для Callback функции
 })
+
+
+
+
 
 -- Новая кнопка для телепортации к ближайшему дропу с ESP
 Tab:AddButton({
@@ -926,9 +951,9 @@ Tab:AddButton({
                 
                 if treesFolder then
                     treesFolder:Destroy() -- Удаляем папку "Trees"
-                    print("Папка 'Trees' была удалена.")
+                    print(" ")
                 else
-                    print("Папка 'Trees' не найдена.")
+                    print(" ")
                 end
 
                 -- Удаляем все модели "Tree" из папки "map"
@@ -939,7 +964,7 @@ Tab:AddButton({
                     end
                 end
             else
-                print("Папка 'map' не найдена.")
+                print(" ")
             end
 
             wait(3) -- Ждем 3 секунды перед следующим выполнением
