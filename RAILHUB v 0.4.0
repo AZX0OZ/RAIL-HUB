@@ -329,56 +329,7 @@ local Tab = Window:MakeTab({
 	Name = "Игрок",
 	Icon = "rbxassetid://4483345998",
 	PremiumOnly = false
-})
 
--- Подсекция
-local Section = Tab:AddSection({
-	Name = "AFK"
-})
-
-Tab:AddButton({
-    Name = "AFK MOD",
-    Callback = function()
-        repeat wait() until game:IsLoaded()
-        game:GetService("Players").LocalPlayer.Idled:Connect(function()
-            game:GetService("VirtualUser"):ClickButton2(Vector2.new())
-        end)
-    end
-})
-
-
--- Получение необходимых сервисов
-local UserInputService = game:GetService("UserInputService")
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-
--- Функция для генерации случайного времени между 1 и 5 минутами
-local function getRandomClickDelay()
-    return math.random(60, 220) -- Случайное время от 60 до 300 секунд
-end
-
--- Функция для клика в месте курсора
-local function autoClick()
-    while isAutoClicking do -- Цикл продолжается, пока авто-клик включен
-        local mouse = player:GetMouse()
-        wait(getRandomClickDelay()) -- Ждём случайное время перед кликом
-        
-        -- Получаем позицию курсора
-        local cursorPosition = mouse.Hit.Position
-        
-        -- Эмулируем клик
-        UserInputService:SendInputEvent({
-            InputType = Enum.InputType.MouseButton1,
-            UserInputState = Enum.UserInputState.Begin,
-            Position = Vector2.new(cursorPosition.X, cursorPosition.Y)
-        })
-        UserInputService:SendInputEvent({
-            InputType = Enum.InputType.MouseButton1,
-            UserInputState = Enum.UserInputState.End,
-            Position = Vector2.new(cursorPosition.X, cursorPosition.Y)
-        })
-    end
-end
 
 
 
