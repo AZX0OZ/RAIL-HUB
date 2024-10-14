@@ -40,7 +40,7 @@ local Section = Tab:AddSection({
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "v 0.4.4!"
+	Name = "v 0.4.5!"
 })
 
 local textToCopy = "https://discord.gg/bvEQEUuCFQ" -- Замените этот текст на нужный вам.
@@ -380,7 +380,13 @@ userInputService.InputEnded:Connect(function(input)
     end
 end)
 
-
+-- Кнопка
+Tab:AddButton({
+	Name = "Max zoom",
+	Callback = function()
+      	    game:GetService("Players").LocalPlayer.CameraMaxZoomDistance = 99999999
+  	end    
+})
 
 
 
