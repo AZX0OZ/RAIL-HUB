@@ -41,7 +41,7 @@ local Section = Tab:AddSection({
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "v 0.4.6!"
+	Name = "v 0.4.7!"
 })
 
 local textToCopy = "https://discord.gg/bvEQEUuCFQ" -- Замените этот текст на нужный вам.
@@ -872,6 +872,63 @@ Tab:AddButton({
     end -- Закрывающая скобка для Callback функции телепортации
 })
 
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "trash"
+})
+
+
+Tab:AddToggle({
+    Name = "ESP trash (test)",
+    Default = false,
+    Callback = function(Value)
+        -- Получаем доступ к папке Dropable
+        local dropableFolder = workspace:WaitForChild("Dropable")
+
+        -- Функция для создания текстового вывода
+        local function createItemLabel(item)
+            local billboardGui = Instance.new("BillboardGui")
+            billboardGui.Adornee = item
+            billboardGui.Size = UDim2.new(0, 75, 0, 15) -- Увеличил размер для лучшей видимости
+            billboardGui.StudsOffset = Vector3.new(0, 0.4, 0) -- Увеличил смещение по вертикали
+            
+            local textLabel = Instance.new("TextLabel")
+            billboardGui.AlwaysOnTop = true
+            textLabel.Size = UDim2.new(1, 0, 1, 0)
+            textLabel.BackgroundTransparency = 1
+            textLabel.Text = item.Name
+            textLabel.TextColor3 = Color3.fromRGB(75, 184, 255) -- RGB формат
+            textLabel.TextScaled = true
+            textLabel.TextStrokeTransparency = 0.5 -- Небольшая прозрачность обводки для лучшей читаемости
+
+            -- Связываем текстовый лейбл с BillboardGui
+            textLabel.Parent = billboardGui
+            billboardGui.Parent = item
+        end
+
+        -- Проходим по всем моделям в папке Dropable и создаем текстовые лейблы
+        for _, item in ipairs(dropableFolder:GetChildren()) do
+            if item:IsA("Model") then
+                if Value then
+                    createItemLabel(item)  -- Создаём метку, если тумблер включен
+                    
+                else
+                    -- Удаляем BillboardGui, если тумблер выключен
+                    local billboardGui = item:FindFirstChildOfClass("BillboardGui")
+                    if billboardGui then
+                        billboardGui:Destroy()
+                    end
+                end
+            end
+        end
+    end
+})
+
+
+
+
+
+
 
 
 -- Подсекция
@@ -1389,6 +1446,7 @@ Tab:AddButton({
 
 
 
+
  
 
 
@@ -1489,3 +1547,21 @@ OrionLib:MakeNotification({
     Image = "rbxassetid://4483345998",
     Time = 10
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
