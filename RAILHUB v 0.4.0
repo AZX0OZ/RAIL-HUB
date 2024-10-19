@@ -1053,7 +1053,7 @@ end)
 
 -- Toggle Implementation for Aimbot
 Tab:AddToggle({
-    Name = "AIM-BOT",
+    Name = "Enable aim",
     Default = _G.AimbotEnabled,
     Callback = function(aimbot)
         _G.AimbotEnabled = aimbot
@@ -1071,7 +1071,7 @@ Tab:AddToggle({
 
 -- Silent Aim Toggle
 Tab:AddToggle({
-    Name = "silent aim",
+    Name = "silent aim (не работает)",
     Default = _G.SilentAimEnabled,
     Callback = function(active)
         _G.SilentAimEnabled = active
