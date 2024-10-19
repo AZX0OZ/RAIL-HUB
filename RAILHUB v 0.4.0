@@ -41,7 +41,7 @@ local Section = Tab:AddSection({
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "v 0.5.0.1!"
+	Name = "v 0.5.0.2!"
 })
 
 local textToCopy = "https://discord.gg/bvEQEUuCFQ" -- Замените этот текст на нужный вам.
@@ -589,20 +589,20 @@ local updateInterval = 0.1 -- Update every 0.1 seconds (10 times per second)
 local function updateHitbox(player)
     local character = player.Character
     if character and character:FindFirstChild("HumanoidRootPart") then
-        local humanoidRootPart = character.HumanoidRootPart
+        local HumanoidRootPart = character.HumanoidRootPart
         local humanoid = character:FindFirstChildOfClass("Humanoid")
 
         -- Only update if the player is not seated
         if humanoid and humanoid:GetState() ~= Enum.HumanoidStateType.Seated then
             pcall(function()
                 if _G.Size == 2 then
-                    humanoidRootPart.Transparency = 1 -- Make it invisible
+                    HumanoidRootPart.Transparency = 1 -- Make it invisible
                 else
-                    humanoidRootPart.Size = Vector3.new(_G.Size, _G.Size, _G.Size)
-                    humanoidRootPart.Transparency = 0.9
-                    humanoidRootPart.BrickColor = BrickColor.new("Grey")
-                    humanoidRootPart.Material = Enum.Material.Neon
-                    humanoidRootPart.CanCollide = false
+                    HumanoidRootPart.Size = Vector3.new(_G.Size, _G.Size, _G.Size)
+                    HumanoidRootPart.Transparency = 0.9
+                    HumanoidRootPart.BrickColor = BrickColor.new("Grey")
+                    HumanoidRootPart.Material = Enum.Material.Neon
+                    HumanoidRootPart.CanCollide = false
                 end
             end)
         end
@@ -918,6 +918,10 @@ local Section = Tab:AddSection({
 
 
 
+
+
+
+
 local Camera = workspace.CurrentCamera
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -927,6 +931,8 @@ local LocalPlayer = Players.LocalPlayer
 local Holding = false
 
 _G.AimbotEnabled = false
+_G.AimbotActive = false -- For sticky aim
+_G.SilentAimEnabled = false -- For silent aim
 _G.TeamCheck = false
 _G.AimPart = "Head"
 _G.Sensitivity = 0.1
@@ -956,6 +962,7 @@ local currentTarget = nil -- Variable to store the currently targeted player
 local function GetClosestPlayer()
     local closestDistance = _G.CircleRadius
     local target = nil
+    local centerPoint = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
 
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
@@ -965,9 +972,9 @@ local function GetClosestPlayer()
                     local humanoid = character:FindFirstChild("Humanoid")
                     if humanoid and humanoid.Health > 0 then
                         local screenPoint = Camera:WorldToScreenPoint(character.HumanoidRootPart.Position)
-                        local mousePosition = UserInputService:GetMouseLocation()
-                        local vectorDistance = (Vector2.new(mousePosition.X, mousePosition.Y) - Vector2.new(screenPoint.X, screenPoint.Y)).Magnitude
+                        local vectorDistance = (centerPoint - Vector2.new(screenPoint.X, screenPoint.Y)).Magnitude
 
+                        -- Check if the player is within the FOV radius and closer to the center
                         if vectorDistance < closestDistance then
                             target = player
                             closestDistance = vectorDistance
@@ -1005,9 +1012,7 @@ end)
 UserInputService.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton2 then
         Holding = false
-        
-        -- Release the target when aiming is stopped
-        currentTarget = nil
+        currentTarget = nil -- Release the target when aiming is stopped
     end
 end)
 
@@ -1031,9 +1036,16 @@ RunService.RenderStepped:Connect(function()
             else
                 aimPosition = currentTarget.Character[_G.AimPart].Position
             end
-            
-            if aimPosition then
-                TweenService:Create(Camera, TweenInfo.new(_G.Sensitivity, Enum.EasingStyle.Sine), {CFrame = CFrame.new(Camera.CFrame.Position, aimPosition)}):Play()
+
+            -- Silent aim logic
+            if _G.SilentAimEnabled then
+                -- No need to move camera, just mark target for shooting accuracy
+                -- You can add silent aim shooting logic here if required
+            elseif _G.AimbotActive then
+                -- Sticky aim logic: moves camera towards the target
+                if aimPosition then
+                    TweenService:Create(Camera, TweenInfo.new(_G.Sensitivity, Enum.EasingStyle.Sine), {CFrame = CFrame.new(Camera.CFrame.Position, aimPosition)}):Play()
+                end
             end
         end
     end
@@ -1048,18 +1060,36 @@ Tab:AddToggle({
     end    
 })
 
+-- Aimbot Active Toggle
+Tab:AddToggle({
+    Name = "sticky aim",
+    Default = _G.AimbotActive,
+    Callback = function(active)
+        _G.AimbotActive = active
+    end    
+})
+
+-- Silent Aim Toggle
+Tab:AddToggle({
+    Name = "silent aim",
+    Default = _G.SilentAimEnabled,
+    Callback = function(active)
+        _G.SilentAimEnabled = active
+    end    
+})
+
 Tab:AddDropdown({
-	Name = "Наводка",
-	Default = "Head",
-	Options = {"Head", "Torso"},
-	Callback = function(aim)
-		_G.AimPart = aim
-	end    
+    Name = "Aim Part",
+    Default = "Head",
+    Options = {"Head", "Torso"},
+    Callback = function(aim)
+        _G.AimPart = aim
+    end    
 })
 
 -- Slider Implementation for Sensitivity
 Tab:AddSlider({
-    Name = "Чувствительность",
+    Name = "Sensitivity",
     Min = 0,
     Max = 1,
     Default = _G.Sensitivity,
@@ -1073,7 +1103,7 @@ Tab:AddSlider({
 
 -- Slider Implementation for FOV
 Tab:AddSlider({
-    Name = "Аим FOV",
+    Name = "Aim FOV",
     Min = 0,
     Max = 1000,
     Default = _G.CircleRadius,
@@ -1085,10 +1115,9 @@ Tab:AddSlider({
     end    
 })
 
-
 -- Toggle for Motion Prediction
 Tab:AddToggle({
-    Name = "предугадывание",
+    Name = "Prediction",
     Default = _G.PredictionEnabled,
     Callback = function(value)
         _G.PredictionEnabled = value
@@ -1097,7 +1126,7 @@ Tab:AddToggle({
 
 -- Slider for Prediction Strength
 Tab:AddSlider({
-    Name = "сила предугадывания",
+    Name = "Prediction Strength",
     Min = 0,
     Max = 2, -- Adjust max as needed for how much you want to predict movement
     Default = _G.PredictionStrength,
@@ -1110,7 +1139,7 @@ Tab:AddSlider({
 })
 
 Tab:AddColorpicker({
-    Name = "Цвет FOV",
+    Name = "FOV Color",
     Default = Color3.fromRGB(255, 255, 255),
     Callback = function(color)
         _G.CircleColor = color
@@ -1128,7 +1157,7 @@ Tab:AddToggle({
 
 -- Slider Implementation for Transparency
 Tab:AddSlider({
-    Name = "прозрачность FOV",
+    Name = "FOV Transparency",
     Min = 0,
     Max = 1,
     Default = _G.CircleTransparency,
@@ -1139,6 +1168,7 @@ Tab:AddSlider({
         _G.CircleTransparency = trans
     end    
 })
+
 
 -- Секция-------------------------------------------------------------------------------------------------
 local Tab = Window:MakeTab({
@@ -1273,6 +1303,83 @@ setupTeleportWalking(initialCharacter)
 player.CharacterAdded:Connect(function(newCharacter)
     setupTeleportWalking(newCharacter)
 end)
+
+
+-- Подсекция
+local Section = Tab:AddSection({
+	Name = "fly"
+})
+
+local Player = game.Players.LocalPlayer
+local Character = Player.Character or Player.CharacterAdded:Wait()
+local UserInputService = game:GetService("UserInputService")
+
+local Flying = false
+local Speed = 50 -- Initial flight speed
+
+local function toggleFlight()
+    Flying = not Flying
+    if Flying then
+        local bodyVelocity = Instance.new("BodyVelocity")
+        bodyVelocity.Velocity = Vector3.new(0, Speed, 0)
+        bodyVelocity.MaxForce = Vector3.new(100000, 100000, 100000)
+        bodyVelocity.Parent = Character.HumanoidRootPart
+
+        while Flying do
+            wait()
+            local direction = Vector3.new(0, 0, 0)
+
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                direction = direction + workspace.CurrentCamera.CFrame.LookVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                direction = direction - workspace.CurrentCamera.CFrame.LookVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                direction = direction - workspace.CurrentCamera.CFrame.RightVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                direction = direction + workspace.CurrentCamera.CFrame.RightVector
+            end
+            
+            -- Set the body velocity immediately based on user input
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                bodyVelocity.Velocity = Vector3.new(direction.X * Speed, Speed, direction.Z * Speed)
+            elseif UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then -- Changed from LeftControl to LeftShift
+                bodyVelocity.Velocity = Vector3.new(direction.X * Speed, -Speed, direction.Z * Speed)
+            else
+                bodyVelocity.Velocity = Vector3.new(direction.X * Speed, 0, direction.Z * Speed)
+            end
+        end
+        bodyVelocity:Destroy()
+    end
+end
+
+Tab:AddToggle({
+    Name = "Fly",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            toggleFlight()
+        else
+            Flying = false
+        end
+    end    
+})
+
+Tab:AddSlider({
+    Name = "Fly Speed",
+    Min = 0,
+    Max = 500,
+    Default = 50,
+    Color = Color3.fromRGB(255,255,255),
+    Increment = 1,
+    ValueName = "speed",
+    Callback = function(Value)
+        Speed = Value -- Set the flight speed
+    end    
+})
+
 
 -- Подсекция
 local Section = Tab:AddSection({
