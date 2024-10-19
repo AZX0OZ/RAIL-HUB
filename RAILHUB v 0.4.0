@@ -41,7 +41,7 @@ local Section = Tab:AddSection({
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "v 0.5.0!"
+	Name = "v 0.5.0.1!"
 })
 
 local textToCopy = "https://discord.gg/bvEQEUuCFQ" -- Замените этот текст на нужный вам.
@@ -65,6 +65,9 @@ Tab:AddButton({
         print("Ссылка была скопирована: " .. textToCopy) -- Печатает сообщение в консоль для подтверждения
     end    
 })
+
+
+
 
 
 
@@ -147,8 +150,41 @@ Tab:AddButton({
   	end    
 })
 
+-- Кнопка
 Tab:AddButton({
-	Name = "самолет",
+	Name = "ВДВ",
+	Callback = function()
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(214.971634, 2.96874952, -79.2867432, -0.999995053, -2.49700776e-08, -0.00313778711, -2.4921162e-08, 1, -1.56281175e-08, 0.00313778711, -1.55498441e-08, -0.999995053)
+  	end    
+})
+
+-- Кнопка
+Tab:AddButton({
+	Name = "Штаб ВЧ",
+	Callback = function()
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-365.19281, 3.06999874, 67.8806, 0.00635624724, 3.76294818e-09, -0.999979794, 1.77516082e-08, 1, 3.87586008e-09, 0.999979794, -1.77758857e-08, 0.00635624724)
+  	end    
+})
+
+-- Кнопка
+Tab:AddButton({
+	Name = "ВП",
+	Callback = function()
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-397.532074, 3.0687499, 334.057129, -0.999995351, 1.42848544e-09, 0.00304037798, 1.44236434e-09, 1, 4.56268046e-09, -0.00304037798, 4.56704452e-09, -0.999995351)
+  	end    
+})
+
+-- Кнопка
+Tab:AddButton({
+	Name = "Столовая",
+	Callback = function()
+      		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(82.2273712, 2.96875, 233.073914, 0.999599397, -6.32963904e-08, -0.0283029545, 6.55864625e-08, 1, 7.99843747e-08, 0.0283029545, -8.18086221e-08, 0.999599397)
+  	end    
+})
+
+
+Tab:AddButton({
+	Name = "Самолет",
 	Callback = function()
       		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1424.59888, 1363.37061, 421.928558)
   	end    
@@ -652,62 +688,64 @@ local showHealthBar = false
 
 local function createESP(player)
     local espBoxOutline = Drawing.new("Square")
-    espBoxOutline.Color = Color3.new(0, 0, 0) -- Black outline color
-    espBoxOutline.Thickness = 1.4
+    espBoxOutline.Color = Color3.new(0, 0, 0)
+    espBoxOutline.Thickness = 0.5
     espBoxOutline.Transparency = 1
     espBoxOutline.Filled = false
+    espBoxOutline.Visible = false
 
     local espBox = Drawing.new("Square")
-    espBox.Color = Color3.new(1, 1, 1) -- White color for the box
-    espBox.Thickness = 2
+    espBox.Color = Color3.new(1, 1, 1)
+    espBox.Thickness = 1
     espBox.Transparency = 1
     espBox.Filled = false
+    espBox.Visible = false
 
     local espName = Drawing.new("Text")
-    espName.Color = Color3.new(1, 1, 1) -- White color for the name
+    espName.Color = Color3.new(1, 1, 1)
     espName.Size = 13
     espName.Center = true
     espName.Outline = true
     espName.Text = player.Name
+    espName.Visible = false
 
     local espTeam = Drawing.new("Text")
     espTeam.Size = 16
     espTeam.Center = true
     espTeam.Outline = true
+    espTeam.Visible = false
 
     local healthBarBackground = Drawing.new("Square")
-    healthBarBackground.Color = Color3.new(0, 0, 0) -- Black background for health bar
+    healthBarBackground.Color = Color3.new(0, 0, 0)
     healthBarBackground.Filled = true
     healthBarBackground.Transparency = 0.7
     healthBarBackground.Thickness = 1
+    healthBarBackground.Visible = false
 
     local healthBar = Drawing.new("Square")
-    healthBar.Color = Color3.new(0, 1, 0) -- Green color for health bar
+    healthBar.Color = Color3.new(0, 1, 0)
     healthBar.Filled = true
     healthBar.Transparency = 0.8
     healthBar.Thickness = 1
-
-    local skeletonLines = {}
-
-    -- Create line segments for the skeleton
-    for i = 1, 6 do
-        local line = Drawing.new("Line")
-        line.Color = Color3.new(1, 1, 1) -- White color for the skeleton
-        line.Thickness = 1
-        skeletonLines[i] = line
-    end
+    healthBar.Visible = false
 
     local function updateESP()
+        if not showESPBox and not showESPName and not showESPTeam and not showHealthBar then
+            -- Hide all ESP elements if all toggles are off
+            espBoxOutline.Visible = false
+            espBox.Visible = false
+            espName.Visible = false
+            espTeam.Visible = false
+            healthBar.Visible = false
+            healthBarBackground.Visible = false
+            return
+        end
+
         local character = player.Character
         if character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("Head") and player.Team then
             local rootPart = character:FindFirstChild("HumanoidRootPart")
             local head = character:FindFirstChild("Head")
             local humanoid = character:FindFirstChild("Humanoid")
-            local torso = character:FindFirstChild("Torso")
-            local leftArm = character:FindFirstChild("Left Arm")
-            local rightArm = character:FindFirstChild("Right Arm")
-            local leftLeg = character:FindFirstChild("Left Leg")
-            local rightLeg = character:FindFirstChild("Right Leg")
 
             -- Box ESP
             local rootPos, onScreenRoot = camera:WorldToViewportPoint(rootPart.Position)
@@ -716,11 +754,10 @@ local function createESP(player)
 
             if onScreenRoot and onScreenHead then
                 -- Calculate height and width based on character's body
-                local height = (headPos.Y - camera:WorldToViewportPoint(legPos).Y) -- Height from head to legs
-                local width = height / 2 -- Approximate width relative to height
+                local height = (headPos.Y - camera:WorldToViewportPoint(legPos).Y)
+                local width = height / 2
 
                 if showESPBox then
-                    -- Outline ESP
                     espBoxOutline.Size = Vector2.new(width + 4, height + 4)
                     espBoxOutline.Position = Vector2.new(rootPos.X - width / 2 - 2, headPos.Y - 2)
                     espBoxOutline.Visible = true
@@ -734,7 +771,6 @@ local function createESP(player)
                 end
 
                 if showESPName then
-                    -- Name ESP
                     espName.Position = Vector2.new(rootPos.X, headPos.Y - 25)
                     espName.Visible = true
                 else
@@ -742,7 +778,6 @@ local function createESP(player)
                 end
 
                 if showESPTeam then
-                    -- Team ESP (set color based on player's team color)
                     local teamColor = player.Team.TeamColor.Color
                     espTeam.Color = teamColor
                     espTeam.Text = player.Team.Name
@@ -755,13 +790,10 @@ local function createESP(player)
                 if showHealthBar and humanoid then
                     local health = humanoid.Health
                     local maxHealth = humanoid.MaxHealth
-
-                    -- Background of health bar
                     healthBarBackground.Size = Vector2.new(5, height)
                     healthBarBackground.Position = Vector2.new(rootPos.X - width / 2 - 10, headPos.Y)
                     healthBarBackground.Visible = true
 
-                    -- Actual health bar
                     healthBar.Size = Vector2.new(5, (health / maxHealth) * height)
                     healthBar.Position = Vector2.new(rootPos.X - width / 2 - 10, headPos.Y + height - healthBar.Size.Y)
                     healthBar.Visible = true
@@ -769,9 +801,6 @@ local function createESP(player)
                     healthBar.Visible = false
                     healthBarBackground.Visible = false
                 end
-
-                -- Skeleton ESP for R6
-                -- (rest of the skeleton code)
             else
                 espBoxOutline.Visible = false
                 espBox.Visible = false
@@ -779,9 +808,6 @@ local function createESP(player)
                 espTeam.Visible = false
                 healthBar.Visible = false
                 healthBarBackground.Visible = false
-                for i = 1, 5 do
-                    skeletonLines[i].Visible = false
-                end
             end
         else
             espBoxOutline.Visible = false
@@ -790,27 +816,20 @@ local function createESP(player)
             espTeam.Visible = false
             healthBar.Visible = false
             healthBarBackground.Visible = false
-            for i = 1, 5 do
-                skeletonLines[i].Visible = false
-            end
         end
     end
 
-    -- Update the ESP elements each frame
-    game:GetService("RunService").RenderStepped:Connect(updateESP)
+    local connection = game:GetService("RunService").RenderStepped:Connect(updateESP)
 
-    -- Cleanup when the player leaves
     player.AncestryChanged:Connect(function()
         if not player:IsDescendantOf(game) then
+            connection:Disconnect()
             espBoxOutline:Remove()
             espBox:Remove()
             espName:Remove()
             espTeam:Remove()
             healthBar:Remove()
             healthBarBackground:Remove()
-            for i = 1, 5 do
-                skeletonLines[i]:Remove()
-            end
         end
     end)
 end
@@ -831,36 +850,44 @@ end)
 
 -- Toggle system using your provided Tab:AddToggle
 Tab:AddToggle({
-	Name = "ESP Box",
-	Default = false,
-	Callback = function(Value)
-		showESPBox = Value
-	end    
+    Name = "ESP Box",
+    Default = false,
+    Callback = function(Value)
+        showESPBox = Value
+    end
 })
 
 Tab:AddToggle({
-	Name = "ESP Name",
-	Default = false,
-	Callback = function(Value)
-		showESPName = Value
-	end    
+    Name = "ESP Name",
+    Default = false,
+    Callback = function(Value)
+        showESPName = Value
+    end
 })
 
 Tab:AddToggle({
-	Name = "ESP Team",
-	Default = false,
-	Callback = function(Value)
-		showESPTeam = Value
-	end    
+    Name = "ESP Team",
+    Default = false,
+    Callback = function(Value)
+        showESPTeam = Value
+    end
 })
 
 Tab:AddToggle({
-	Name = "Health Bar",
-	Default = false,
-	Callback = function(Value)
-		showHealthBar = Value
-	end    
+    Name = "Health Bar",
+    Default = false,
+    Callback = function(Value)
+        showHealthBar = Value
+    end
 })
+
+
+
+
+
+
+
+
 
 -- Подсекция
 local Section = Tab:AddSection({
@@ -1833,6 +1860,59 @@ Tab:AddButton({
     end
 })
 
+-- Секция ----------------------------------------------------------------------------------------------
+local Tab = Window:MakeTab({
+	Name = "Троллинг",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+Tab:AddButton({
+	Name = "Открыть КПП",
+	Callback = function()
+      		local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Запоминаем начальное местоположение игрока
+local initialPosition = character.HumanoidRootPart.Position
+
+-- Перемещаем персонажа на новое место
+character.HumanoidRootPart.CFrame = CFrame.new(289.480682, 4.2579999, 65.4795227, 0.999994755, 1.65117839e-08, 0.00324080419, -1.6472109e-08, 1, -1.22687247e-08, -0.00324080419, 1.22152777e-08, 0.999994755)
+wait(0.15)
+
+-- Находим кнопку-ворота
+local buttonGate = game.Workspace:FindFirstChild("map")
+if buttonGate then
+    local gate = buttonGate:FindFirstChild("Gate")
+    if gate then
+        local buttonGatePart = gate:FindFirstChild("ButtonGate")
+        if buttonGatePart then
+            local press = buttonGatePart:FindFirstChild("Press")
+            if press then
+                local prompt = press:FindFirstChild("Prompt")
+                if prompt then
+                    print("Активируем ProximityPrompt...")
+                    -- Активировать ProximityPrompt
+                    prompt:InputHoldBegin()
+
+                    -- Ждем 1 секунду для активации
+                    wait(0.15) -- Время ожидания можно изменить
+                    prompt:InputHoldEnd()
+                    print("ProximityPrompt активирован.")
+
+                    -- Ждем 0.2 секунды перед телепортацией обратно
+                    wait(0.01)
+
+                    -- Телепортируемся на начальную позицию
+                    character.HumanoidRootPart.Position = initialPosition
+                end
+            end
+        end
+    end
+end
+  	end    
+})
+
 
 ---------------------------------------------------------------------------------------------------
 local Tab = Window:MakeTab({
@@ -1853,15 +1933,7 @@ Tab:AddButton({
   	end    
 })
 
-
-
-
- 
-
-
-
-
-
+local Tab = YourTabObject -- Replace this with your actual tab object
 
 
 
