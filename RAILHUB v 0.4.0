@@ -586,29 +586,6 @@ local Section = Tab:AddSection({
 local lastUpdateTime = 0
 local updateInterval = 0.1 -- Update every 0.1 seconds (10 times per second)
 
-local function updateHitbox(player)
-    local character = player.Character
-    if character and character:FindFirstChild("HumanoidRootPart") then
-        local HumanoidRootPart = character.HumanoidRootPart
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-
-        -- Only update if the player is not seated
-        if humanoid and humanoid:GetState() ~= Enum.HumanoidStateType.Seated then
-            pcall(function()
-                if _G.Size == 2 then
-                    HumanoidRootPart.Transparency = 1 -- Make it invisible
-                else
-                    HumanoidRootPart.Size = Vector3.new(_G.Size, _G.Size, _G.Size)
-                    HumanoidRootPart.Transparency = 0.9
-                    HumanoidRootPart.BrickColor = BrickColor.new("Grey")
-                    HumanoidRootPart.Material = Enum.Material.Neon
-                    HumanoidRootPart.CanCollide = false
-                end
-            end)
-        end
-    end
-end
-
 Tab:AddSlider({
     Name = "Hitbox",
     Min = 2,
@@ -634,43 +611,23 @@ Tab:AddSlider({
 
                 for _, player in pairs(game:GetService('Players'):GetPlayers()) do
                     if player.Name ~= game:GetService('Players').LocalPlayer.Name then
-                        updateHitbox(player)
+                        local character = player.Character
+                        if character and character:FindFirstChild("HumanoidRootPart") then
+                            local humanoidRootPart = character.HumanoidRootPart
+                            pcall(function()
+                                humanoidRootPart.Size = Vector3.new(_G.Size, _G.Size, _G.Size)
+                                humanoidRootPart.Transparency = 0.9
+                                humanoidRootPart.BrickColor = BrickColor.new("Grey")
+                                humanoidRootPart.Material = Enum.Material.Neon
+                                humanoidRootPart.CanCollide = false
+                            end)
+                        end
                     end
                 end
             end
         end)
-
-        -- Update all players' hitboxes initially
-        for _, player in pairs(game:GetService('Players'):GetPlayers()) do
-            if player.Name ~= game:GetService('Players').LocalPlayer.Name then
-                updateHitbox(player)
-            end
-        end
     end
 })
-
--- Listen for players entering the game
-game:GetService("Players").PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function(character)
-        wait(1) -- Wait for character to fully load
-        updateHitbox(player) -- Apply hitbox settings when the character is added
-    end)
-end)
-
--- Listen for players leaving the game
-game:GetService("Players").PlayerRemoving:Connect(function(player)
-    -- Optionally, you could reset the hitbox here if needed
-end)
-
--- Monitor the humanoid state changes
-for _, player in pairs(game:GetService('Players'):GetPlayers()) do
-    player.CharacterAdded:Connect(function(character)
-        local humanoid = character:WaitForChild("Humanoid")
-        humanoid.StateChanged:Connect(function()
-            updateHitbox(player) -- Update hitbox when the humanoid state changes
-        end)
-    end)
-end
 
 -- Подсекция
 local Section = Tab:AddSection({
