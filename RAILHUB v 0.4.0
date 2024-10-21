@@ -36,12 +36,12 @@ local Tab = Window:MakeTab({
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "Последнее обновление : 19.10.2024!"
+	Name = "Последнее обновление : 21.10.2024!"
 })
 
 -- Подсекция
 local Section = Tab:AddSection({
-	Name = "v 0.5.0.2!"
+	Name = "v 0.5.0.3!"
 })
 
 local textToCopy = "https://discord.gg/bvEQEUuCFQ" -- Замените этот текст на нужный вам.
@@ -1268,16 +1268,24 @@ local Section = Tab:AddSection({
 })
 
 local Player = game.Players.LocalPlayer
-local Character = Player.Character or Player.CharacterAdded:Wait()
 local UserInputService = game:GetService("UserInputService")
 
 local Flying = false
 local Speed = 50 -- Initial flight speed
+local bodyVelocity -- Определяем переменную для BodyVelocity
 
-local function toggleFlight()
+local function stopFlight()
+    Flying = false
+    if bodyVelocity then
+        bodyVelocity:Destroy()
+        bodyVelocity = nil
+    end
+end
+
+local function toggleFlight(Character)
     Flying = not Flying
     if Flying then
-        local bodyVelocity = Instance.new("BodyVelocity")
+        bodyVelocity = Instance.new("BodyVelocity")
         bodyVelocity.Velocity = Vector3.new(0, Speed, 0)
         bodyVelocity.MaxForce = Vector3.new(100000, 100000, 100000)
         bodyVelocity.Parent = Character.HumanoidRootPart
@@ -1302,40 +1310,60 @@ local function toggleFlight()
             -- Set the body velocity immediately based on user input
             if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
                 bodyVelocity.Velocity = Vector3.new(direction.X * Speed, Speed, direction.Z * Speed)
-            elseif UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then -- Changed from LeftControl to LeftShift
+            elseif UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
                 bodyVelocity.Velocity = Vector3.new(direction.X * Speed, -Speed, direction.Z * Speed)
             else
                 bodyVelocity.Velocity = Vector3.new(direction.X * Speed, 0, direction.Z * Speed)
             end
         end
-        bodyVelocity:Destroy()
+        stopFlight()
+    else
+        stopFlight()
     end
 end
 
-Tab:AddToggle({
-    Name = "Fly",
-    Default = false,
-    Callback = function(Value)
-        if Value then
-            toggleFlight()
-        else
-            Flying = false
-        end
-    end    
-})
+local function onCharacterAdded(Character)
+    Character:WaitForChild("HumanoidRootPart")
 
-Tab:AddSlider({
-    Name = "Fly Speed",
-    Min = 0,
-    Max = 500,
-    Default = 50,
-    Color = Color3.fromRGB(255,255,255),
-    Increment = 1,
-    ValueName = "speed",
-    Callback = function(Value)
-        Speed = Value -- Set the flight speed
-    end    
-})
+    Tab:AddToggle({
+        Name = "Fly",
+        Default = false,
+        Callback = function(Value)
+            if Value then
+                toggleFlight(Character)
+            else
+                stopFlight()
+            end
+        end    
+    })
+
+    Tab:AddSlider({
+        Name = "Fly Speed",
+        Min = 0,
+        Max = 500,
+        Default = 50,
+        Color = Color3.fromRGB(255,255,255),
+        Increment = 1,
+        ValueName = "speed",
+        Callback = function(Value)
+            Speed = Value -- Set the flight speed
+        end    
+    })
+
+    -- Останавливаем полет при смерти
+    Character:WaitForChild("Humanoid").Died:Connect(function()
+        stopFlight()
+    end)
+end
+
+-- Подключаем обработчик события CharacterAdded
+Player.CharacterAdded:Connect(onCharacterAdded)
+
+-- Инициализируем для текущего персонажа, если он уже существует
+if Player.Character then
+    onCharacterAdded(Player.Character)
+end
+
 
 
 -- Подсекция
