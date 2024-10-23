@@ -862,7 +862,7 @@ Tab:AddToggle({
 })
 
 Tab:AddToggle({
-    Name = "Distance",  -- New toggle for distance display
+    Name = "ESP Distance",  -- New toggle for distance display
     Default = false,
     Callback = function(Value)
         showDistance = Value
