@@ -616,7 +616,7 @@ Tab:AddSlider({
                             local humanoidRootPart = character.HumanoidRootPart
                             pcall(function()
                                 humanoidRootPart.Size = Vector3.new(_G.Size, _G.Size, _G.Size)
-                                humanoidRootPart.Transparency = 0.9
+                                humanoidRootPart.Transparency = (Value == 2) and 1 or 0.9
                                 humanoidRootPart.BrickColor = BrickColor.new("Grey")
                                 humanoidRootPart.Material = Enum.Material.Neon
                                 humanoidRootPart.CanCollide = false
@@ -642,7 +642,10 @@ local showESPBox = false
 local showESPName = false
 local showESPTeam = false
 local showHealthBar = false
-local showDistance = false  -- New variable to control distance display
+local showDistance = false
+
+-- Задержка обновления (в секундах) для снижения нагрузки
+local updateInterval = 0.042  -- Вы можете изменить значение на большее для лучшей производительности
 
 local function createESP(player)
     local espBoxOutline = Drawing.new("Square")
@@ -687,23 +690,28 @@ local function createESP(player)
     healthBar.Thickness = 1
     healthBar.Visible = false
 
-    local distanceLabel = Drawing.new("Text")  -- New Drawing for distance
-    distanceLabel.Color = Color3.new(1, 1, 1)  -- Yellow color for visibility
+    local distanceLabel = Drawing.new("Text")
+    distanceLabel.Color = Color3.new(1, 1, 1)
     distanceLabel.Size = 13
     distanceLabel.Center = true
     distanceLabel.Outline = true
     distanceLabel.Visible = false
 
+    local lastUpdate = 0
+
     local function updateESP()
+        -- Проверяем задержку обновления
+        if tick() - lastUpdate < updateInterval then return end
+        lastUpdate = tick()
+        
         if not showESPBox and not showESPName and not showESPTeam and not showHealthBar and not showDistance then
-            -- Hide all ESP elements if all toggles are off
             espBoxOutline.Visible = false
             espBox.Visible = false
             espName.Visible = false
             espTeam.Visible = false
             healthBar.Visible = false
             healthBarBackground.Visible = false
-            distanceLabel.Visible = false  -- Hide distance label
+            distanceLabel.Visible = false
             return
         end
 
@@ -713,13 +721,11 @@ local function createESP(player)
             local head = character:FindFirstChild("Head")
             local humanoid = character:FindFirstChild("Humanoid")
 
-            -- Box ESP
             local rootPos, onScreenRoot = camera:WorldToViewportPoint(rootPart.Position)
             local headPos, onScreenHead = camera:WorldToViewportPoint(head.Position)
-            local legPos = rootPart.Position - Vector3.new(1, -5.51, 1) -- Approximate leg position
+            local legPos = rootPart.Position - Vector3.new(1, -5.51, 1)
 
             if onScreenRoot and onScreenHead then
-                -- Calculate height and width based on character's body
                 local height = (headPos.Y - camera:WorldToViewportPoint(legPos).Y)
                 local width = height / 2
 
@@ -767,17 +773,16 @@ local function createESP(player)
                     healthBar.Visible = false
                     healthBarBackground.Visible = false
                 end
-                
-                -- Calculate and display distance
+
                 local distance = (rootPart.Position - localPlayer.Character.HumanoidRootPart.Position).magnitude
-                if showDistance then
+                if showDistance and distance < 500 then  -- Ограничение на отображение дальних объектов
                     distanceLabel.Text = string.format("%.2f m", distance)
-                    distanceLabel.Position = Vector2.new(rootPos.X, headPos.Y - 48)  -- Position it above the player's head
+                    distanceLabel.Position = Vector2.new(rootPos.X, headPos.Y - 48)
                     distanceLabel.Visible = true
                 else
                     distanceLabel.Visible = false
                 end
-                
+
             else
                 espBoxOutline.Visible = false
                 espBox.Visible = false
@@ -785,7 +790,7 @@ local function createESP(player)
                 espTeam.Visible = false
                 healthBar.Visible = false
                 healthBarBackground.Visible = false
-                distanceLabel.Visible = false  -- Hide distance label when not on screen
+                distanceLabel.Visible = false
             end
         else
             espBoxOutline.Visible = false
@@ -794,7 +799,7 @@ local function createESP(player)
             espTeam.Visible = false
             healthBar.Visible = false
             healthBarBackground.Visible = false
-            distanceLabel.Visible = false  -- Hide distance label when character is not valid
+            distanceLabel.Visible = false
         end
     end
 
@@ -809,26 +814,23 @@ local function createESP(player)
             espTeam:Remove()
             healthBar:Remove()
             healthBarBackground:Remove()
-            distanceLabel:Remove()  -- Remove distance label when player leaves
+            distanceLabel:Remove()
         end
     end)
 end
 
--- Add ESP for all current players
 for _, player in pairs(players:GetPlayers()) do
     if player ~= localPlayer then
         createESP(player)
     end
 end
 
--- Add ESP for players who join later
 players.PlayerAdded:Connect(function(player)
     if player ~= localPlayer then
         createESP(player)
     end
 end)
 
--- Toggle system using your provided Tab:AddToggle
 Tab:AddToggle({
     Name = "ESP Box",
     Default = false,
@@ -862,7 +864,7 @@ Tab:AddToggle({
 })
 
 Tab:AddToggle({
-    Name = "ESP Distance",  -- New toggle for distance display
+    Name = "ESP Distance",
     Default = false,
     Callback = function(Value)
         showDistance = Value
