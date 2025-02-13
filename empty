@@ -1,5 +1,3 @@
-
-
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 -- Create window
@@ -62,6 +60,9 @@ if not broESPEvent then
     end
 end
 
+-- В начале скрипта добавим:
+_G.BroESPEnabled = false
+
 -- Функция создания ESP для пользователя
 local function createBroESP(player)
     if not _G.BroESPObjects then _G.BroESPObjects = {} end
@@ -73,9 +74,9 @@ local function createBroESP(player)
     text.Center = true
     text.Outline = true
     text.Font = 2
-    text.Size = 16 -- Увеличиваем размер текста
-    text.Color = Color3.fromRGB(255, 0, 0) -- Красный цвет как на скриншоте
-    text.Text = "Cheater" -- Меняем текст на "Cheater"
+    text.Size = 16
+    text.Color = Color3.fromRGB(255, 0, 0)
+    text.Text = "Cheater"
     
     _G.BroESPObjects[player] = {
         text = text
@@ -85,10 +86,10 @@ local function createBroESP(player)
     local connection = game:GetService("RunService").RenderStepped:Connect(function()
         if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             local pos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(
-                player.Character.HumanoidRootPart.Position + Vector3.new(0, 3, 0) -- Поднимаем текст выше
+                player.Character.HumanoidRootPart.Position + Vector3.new(0, 3, 0)
             )
             
-            if onScreen then
+            if onScreen and _G.BroESPEnabled then
                 text.Position = Vector2.new(pos.X, pos.Y)
                 text.Visible = true
             else
@@ -172,25 +173,10 @@ local Button = Tab:CreateButton({
                 
                 -- Bro ESP Toggle
                 NewTab:CreateToggle({
-                    Name = "Bro ESP",
+                    Name = "Bro ESP1",
                     CurrentValue = false,
                     Callback = function(Value)
-                        if Value then
-                            -- Показываем ESP
-                            if _G.BroESPObjects then
-                                for _, objects in pairs(_G.BroESPObjects) do
-                                    if objects.highlight then objects.highlight.Enabled = true end
-                                end
-                            end
-                        else
-                            -- Скрываем ESP (но не удаляем)
-                            if _G.BroESPObjects then
-                                for _, objects in pairs(_G.BroESPObjects) do
-                                    if objects.highlight then objects.highlight.Enabled = false end
-                                    if objects.text then objects.text.Visible = false end
-                                end
-                            end
-                        end
+                        _G.BroESPEnabled = Value
                     end,
                 })
             else
