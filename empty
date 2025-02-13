@@ -1,6 +1,211 @@
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/AZX0OZ/RA1Lhub/refs/heads/main/1"))()
 
--- https://discord.gg/67UTqK8su5
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- https://t.me/+iAxwlFrbUsBiNzli
+-- Create window
+local Window = Rayfield:CreateWindow({
+    Name = "Authorization Menu",
+    LoadingTitle = "Loading...",
+    LoadingSubtitle = "by your name",
+})
+
+-- Создаем ModuleScript для обработки серверных событий
+local serverModule = Instance.new("ModuleScript")
+serverModule.Source = [[
+    local module = {}
+    
+    -- Таблица для отслеживания активных пользователей
+    local activeUsers = {}
+    
+    function module.handleServerEvent(broESPEvent)
+        broESPEvent.OnServerEvent:Connect(function(player, _, playerName)
+            -- Добавляем пользователя в список активных
+            activeUsers[playerName] = true
+            
+            -- Уведомляем всех о новом пользователе
+            for _, plr in pairs(game.Players:GetPlayers()) do
+                task.spawn(function()
+                    broESPEvent:FireClient(plr, playerName)
+                end)
+            end
+            
+            -- Отправляем новому пользователю информацию о других активных пользователях
+            for userName in pairs(activeUsers) do
+                if userName ~= playerName then
+                    task.spawn(function()
+                        broESPEvent:FireClient(player, userName)
+                    end)
+                end
+            end
+        end)
+        
+        game.Players.PlayerRemoving:Connect(function(player)
+            activeUsers[player.Name] = nil
+        end)
+    end
+    
+    return module
+]]
+serverModule.Parent = game:GetService("ReplicatedStorage")
+
+-- Создаем или получаем RemoteEvent
+local broESPEvent = game:GetService("ReplicatedStorage"):FindFirstChild("BroESPEvent")
+if not broESPEvent then
+    broESPEvent = Instance.new("RemoteEvent")
+    broESPEvent.Name = "BroESPEvent"
+    broESPEvent.Parent = game:GetService("ReplicatedStorage")
+    
+    -- Инициализируем серверную часть
+    if game:GetService("RunService"):IsServer() then
+        local serverHandler = require(serverModule)
+        serverHandler.handleServerEvent(broESPEvent)
+    end
+end
+
+-- Функция создания ESP для пользователя
+local function createBroESP(player)
+    if not _G.BroESPObjects then _G.BroESPObjects = {} end
+    if _G.BroESPObjects[player] then return end
+    
+    -- Создаем текст
+    local text = Drawing.new("Text")
+    text.Visible = false
+    text.Center = true
+    text.Outline = true
+    text.Font = 2
+    text.Size = 16 -- Увеличиваем размер текста
+    text.Color = Color3.fromRGB(255, 0, 0) -- Красный цвет как на скриншоте
+    text.Text = "Cheater" -- Меняем текст на "Cheater"
+    
+    _G.BroESPObjects[player] = {
+        text = text
+    }
+    
+    -- Обновление ESP
+    local connection = game:GetService("RunService").RenderStepped:Connect(function()
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local pos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(
+                player.Character.HumanoidRootPart.Position + Vector3.new(0, 3, 0) -- Поднимаем текст выше
+            )
+            
+            if onScreen then
+                text.Position = Vector2.new(pos.X, pos.Y)
+                text.Visible = true
+            else
+                text.Visible = false
+            end
+        end
+    end)
+    
+    _G.BroESPObjects[player].connection = connection
+end
+
+-- Отправляем сигнал о запуске скрипта
+task.spawn(function()
+    wait(1) -- Небольшая задержка для инициализации
+    broESPEvent:FireServer(true, game.Players.LocalPlayer.Name)
+end)
+
+-- Обработчик для получения сигналов от других пользователей
+broESPEvent.OnClientEvent:Connect(function(playerName)
+    local player = game.Players:FindFirstChild(playerName)
+    if player then
+        createBroESP(player)
+    end
+end)
+
+-- Обновляем функцию очистки
+game.Players.PlayerRemoving:Connect(function(player)
+    if _G.BroESPObjects and _G.BroESPObjects[player] then
+        if _G.BroESPObjects[player].text then 
+            _G.BroESPObjects[player].text:Remove() 
+        end
+        if _G.BroESPObjects[player].connection then 
+            _G.BroESPObjects[player].connection:Disconnect() 
+        end
+        _G.BroESPObjects[player] = nil
+    end
+end)
+
+-- Create authorization tab
+local Tab = Window:CreateTab("Authorization")
+
+-- Variable for storing password
+local inputPassword = ""
+local correctPassword = "AZOZ2246" -- Set your password here
+local functionsTabCreated = false -- Variable to track tab creation
+
+-- Create password input field
+local Input = Tab:CreateInput({
+    Name = "Test Function",
+    PlaceholderText = "...",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(Text)
+        inputPassword = Text
+    end,
+})
+
+-- Create login button
+local Button = Tab:CreateButton({
+    Name = "Check pass",
+    Callback = function()
+        if inputPassword == correctPassword then
+            if not functionsTabCreated then -- Check if tab is already created
+                Rayfield:Notify({
+                    Title = "Success!",
+                    Content = "Correct password",
+                    Duration = 3,
+                })
+                
+                -- Create new functions after successful authorization
+                local NewTab = Window:CreateTab("Functions")
+                functionsTabCreated = true -- Mark tab as created
+                
+                -- Example function 1
+                NewTab:CreateButton({
+                    Name = "Function 1",
+                    Callback = function()
+                        -- Your code for function 1
+                        print("Function 1 activated")
+                    end,
+                })
+                
+                -- Bro ESP Toggle
+                NewTab:CreateToggle({
+                    Name = "Bro ESP",
+                    CurrentValue = false,
+                    Callback = function(Value)
+                        if Value then
+                            -- Показываем ESP
+                            if _G.BroESPObjects then
+                                for _, objects in pairs(_G.BroESPObjects) do
+                                    if objects.highlight then objects.highlight.Enabled = true end
+                                end
+                            end
+                        else
+                            -- Скрываем ESP (но не удаляем)
+                            if _G.BroESPObjects then
+                                for _, objects in pairs(_G.BroESPObjects) do
+                                    if objects.highlight then objects.highlight.Enabled = false end
+                                    if objects.text then objects.text.Visible = false end
+                                end
+                            end
+                        end
+                    end,
+                })
+            else
+                Rayfield:Notify({
+                    Title = "Notice!",
+                    Content = "Tab already exists",
+                    Duration = 3,
+                })
+            end
+        else
+            Rayfield:Notify({
+                Title = "Error!",
+                Content = "Wrong password",
+                Duration = 3,
+            })
+        end
+    end,
+}) 
