@@ -1,0 +1,636 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+-- Создаем главное окно
+local Window = Rayfield:CreateWindow({
+    Name = "RAILhub - Build A Boat for Treasure",
+    LoadingTitle = "RAILhub",
+    LoadingSubtitle = "by SREE",
+    ConfigurationSaving = {
+        Enabled = false,
+        FolderName = "RAILhubConfig",
+        FileName = "Config"
+    },
+    Discord = {
+        Enabled = true,
+        Invite = "67UTqK8su5",
+        RememberJoins = true
+    },
+    KeySystem = false
+})
+
+-- Переименуем вкладку "Информация" в "Info"
+local InfoTab = Window:CreateTab("Info", 9072944922)
+local InfoSection = InfoTab:CreateSection("Updates")
+
+InfoTab:CreateLabel("Last update: 16.02.2025!")
+InfoTab:CreateLabel("v 0.0.1!")
+
+-- Discord и Telegram кнопки
+InfoTab:CreateButton({
+    Name = "Discord Link",
+    Callback = function()
+        setclipboard("https://discord.gg/67UTqK8su5")
+        Rayfield:Notify({
+            Title = "Discord Server",
+            Content = "Join our Discord community!",
+            Duration = 3,
+            Image = 4483362458
+        })
+    end,
+})
+
+InfoTab:CreateButton({
+    Name = "Telegram Link",
+    Callback = function()
+        setclipboard("https://t.me/+iAxwlFrbUsBiNzli")
+        Rayfield:Notify({
+            Title = "Telegram Server",
+            Content = "Telegram link copied to clipboard!",
+            Duration = 3,
+            Image = 4483362458
+        })
+    end,
+})
+
+-------------------------------------------------------
+-- Автофарм
+local Players = game:GetService("Players")
+local VirtualUser = game:GetService("VirtualUser")
+
+-- Создаем новый таб для автофарма
+local AutoFarmTab = Window:CreateTab("Auto Farm", 4483345737)
+local AutoFarmSection = AutoFarmTab:CreateSection("Auto Farm Settings")
+
+-- Глобальные переменные для автофарма
+getgenv().autoFarmEnabled = false    -- раньше: getgenv().AF
+local isSilent = false                -- раньше называлось Silent
+local connection = nil
+
+-- Автофарм Toggle
+AutoFarmTab:CreateToggle({
+    Name = "Auto Farm",
+    CurrentValue = false,
+    Flag = "AutoFarmToggle",
+    Callback = function(Value)
+        getgenv().autoFarmEnabled = Value
+
+        local function startAutoFarm()
+            if not getgenv().autoFarmEnabled then return end
+
+            local player = Players.LocalPlayer
+            local character = player.Character or player.CharacterAdded:Wait()
+            local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+            
+            -- Создаем маркер позиции (по желанию можно настроить внешний вид)
+            local newPart = Instance.new("Part")
+            newPart.Size = Vector3.new(5, 1, 5)
+            newPart.Transparency = 0.7
+            newPart.CanCollide = true
+            newPart.Anchored = true
+            newPart.Parent = workspace
+            
+            local decal = Instance.new("Decal")
+            decal.Texture = "rbxassetid://1234567890"
+            decal.Face = Enum.NormalId.Top
+            decal.Parent = newPart
+            
+            -- Вспомогательные функции для вычисления целевого CFrame
+            local function getTargetCFrameNormal(iteration)
+                if iteration == 1 then
+                    return CFrame.new(160.16104125976562, 29.595888137817383, 973.813720703125)
+                else
+                    return CFrame.new(-51, 65, 984 + (iteration - 1) * 770)
+                end
+            end
+
+            local function getTargetCFrameSilent(iteration)
+                if iteration == 1 then
+                    return CFrame.new(160.16104125976562, 29.595888137817383, 973.813720703125)
+                else
+                    return CFrame.new(70.02417755126953, 138.9026336669922, 1371.6341552734375 + (iteration - 2) * 770)
+                end
+            end
+
+            -- Функция для выполнения одного шага автофарма
+            local function TPAF(iteration)
+                if not getgenv().autoFarmEnabled then return end
+
+                -- Выбор позиции в зависимости от выбранного режима (Silent или обычный)
+                local targetCFrame = isSilent and getTargetCFrameSilent(iteration) or getTargetCFrameNormal(iteration)
+                
+                -- Для 5-го шага выполняем специальное действие
+                if iteration == 5 then
+                    firetouchinterest(humanoidRootPart, workspace.BoatStages.NormalStages.TheEnd.GoldenChest.Trigger, 0)
+                    task.delay(0.8, function()
+                        workspace.ClaimRiverResultsGold:FireServer()
+                    end)
+                end
+
+                humanoidRootPart.CFrame = targetCFrame
+                newPart.Position = humanoidRootPart.Position - Vector3.new(0, 2, 0)
+                wait(2.3) -- задержка для стабильной работы
+                if iteration == 1 then
+                    wait(2.3)
+                end
+                if iteration ~= 4 then
+                    workspace.ClaimRiverResultsGold:FireServer()
+                end
+            end
+            
+            -- Выполнение шагов автофарма
+            for i = 1, 10 do
+                if not getgenv().autoFarmEnabled then break end
+                TPAF(i)
+            end
+
+            newPart:Destroy()
+        end
+
+        -- При респавне персонажа, если автофарм включен, запускаем автофарм
+        local function onCharacterRespawned(character)
+            if getgenv().autoFarmEnabled then
+                character:WaitForChild("HumanoidRootPart")
+                startAutoFarm()
+            end
+        end
+
+        if Value then
+            Rayfield:Notify({
+                Title = "Auto Farm - Enabled",
+                Content = "Auto Farm activated. For optimal performance, please use Isolation Mode and enable Anti-AFK.",
+                Duration = 6.5,
+                Image = 4483345998,
+            })
+            local player = Players.LocalPlayer
+            if player.Character then
+                player.Character:BreakJoints()
+            end
+            wait(1)
+            player.CharacterAdded:Connect(onCharacterRespawned)
+        else
+            Rayfield:Notify({
+                Title = "Auto Farm - Disabled",
+                Content = "Auto Farm disabled. Please wait until the current process completes.",
+                Duration = 6.5,
+                Image = 4483345998,
+            })
+            -- Unsubscribe from event if necessary
+        end
+    end,
+})
+
+-- Переключатель "Make it Silent" для выбора режима автофарма (без лишних звуков/визуала)
+AutoFarmTab:CreateToggle({
+    Name = "Make it Silent",
+    CurrentValue = false,
+    Flag = "SilentMode",
+    Callback = function(Value)
+        isSilent = Value
+    end,
+})
+
+-- Счетчик фарма (перенесён из autoFarm.lua)
+local FStats = AutoFarmTab:CreateParagraph({
+    Title = "Farm Stats",
+    Content = "Time: -\nGold Blocks: -\nGold: -\nGold per hour: -"
+})
+
+local clockTime = 0
+local running = false
+local totalGoldGained = 0
+local Ftime = 0
+local totalGoldBlock = 0
+local GoldPerHour = 0
+
+-- Получаем данные игрока (убедитесь, что Data существует)
+local Data = Players.LocalPlayer:WaitForChild("Data")
+local lastGoldValue = Data.Gold.Value
+local IGBLOCK = Data.GoldBlock.Value
+
+local function formatTime(seconds)
+    local hours = math.floor(seconds / 3600)
+    local minutes = math.floor((seconds % 3600) / 60)
+    local sec = seconds % 60
+    return hours .. " hours " .. minutes .. " minutes " .. sec .. " seconds"
+end
+
+local function startClock()
+    if running then return end
+    running = true
+    while running do
+        if getgenv().autoFarmEnabled then
+            clockTime = clockTime + 1
+        else
+            running = false
+        end
+        task.wait(1)
+    end
+end
+
+game:GetService("RunService").Stepped:Connect(function()
+    if getgenv().autoFarmEnabled and not running then
+        task.wait(5)
+        startClock()
+    end
+end)
+
+local function initclock()
+    while true do
+        local FinalGold = Data.Gold.Value
+        Ftime = formatTime(clockTime)
+        local GoldGained = FinalGold - lastGoldValue
+        totalGoldGained = totalGoldGained + GoldGained
+        local FGBLOCK = Data.GoldBlock.Value
+        totalGoldBlock = FGBLOCK - IGBLOCK
+        GoldPerHour = (totalGoldGained / clockTime) * 3600
+
+        FStats:Set({
+            Title = "Farm Stats",
+            Content = "Time: " .. Ftime .. "\n" ..
+                      "Gold Blocks: " .. totalGoldBlock .. "\n" ..
+                      "Gold: " .. totalGoldGained .. "\n" ..
+                      "Gold per hour: " .. math.floor(GoldPerHour)
+        })
+
+        lastGoldValue = FinalGold
+        task.wait(1)
+    end
+end
+
+coroutine.wrap(initclock)()
+
+-------------------------------------------------------
+-- Настройки игрока
+local PlayerSettingsTab = Window:CreateTab("Player Settings", 6034287516)
+
+-- Секция для базовых настроек персонажа
+local BasicSettingsSection = PlayerSettingsTab:CreateSection("Player Settings")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local desiredWalkSpeed = humanoid.WalkSpeed or 16
+local desiredJumpPower = humanoid.JumpPower or 50
+
+-- Добавляем константы для стандартных значений
+local DEFAULT_WALK_SPEED = 16
+local DEFAULT_JUMP_POWER = 50
+
+PlayerSettingsTab:CreateSlider({
+    Name = "Walk Speed",
+    Range = {16, 100},
+    Increment = 1,
+    Suffix = "", 
+    CurrentValue = desiredWalkSpeed,
+    Flag = "WalkSpeed",
+    Callback = function(Value)
+        desiredWalkSpeed = Value
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid.WalkSpeed = Value
+        end
+    end,
+})
+-- Add toggles for custom movement settings
+PlayerSettingsTab:CreateToggle({
+    Name = "Enable Custom Walk Speed",
+    CurrentValue = false,
+    Flag = "CustomWalkSpeed",
+    Callback = function(Value)
+         getgenv().enableCustomWalkSpeed = Value
+         if Value then
+             if player.Character and player.Character:FindFirstChild("Humanoid") then
+                 player.Character.Humanoid.WalkSpeed = desiredWalkSpeed
+             end
+             Rayfield:Notify({
+                 Title = "Custom Walk Speed Enabled",
+                 Content = "Custom Walk Speed activated!",
+                 Duration = 4,
+                 Image = 4483345998,
+             })
+         else
+             if player.Character and player.Character:FindFirstChild("Humanoid") then
+                 -- Возвращаем стандартную скорость при выключении
+                 player.Character.Humanoid.WalkSpeed = DEFAULT_WALK_SPEED
+             end
+             Rayfield:Notify({
+                 Title = "Custom Walk Speed Disabled",
+                 Content = "Reverting to default walk speed on next spawn.",
+                 Duration = 4,
+                 Image = 4483345998,
+             })
+         end
+    end,
+})
+
+PlayerSettingsTab:CreateSlider({
+    Name = "Jump Power",
+    Range = {50, 200},
+    Increment = 1,
+    Suffix = "",
+    CurrentValue = desiredJumpPower,
+    Flag = "JumpPower",
+    Callback = function(Value)
+        desiredJumpPower = Value
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid.JumpPower = Value
+        end
+    end,
+})
+
+
+
+PlayerSettingsTab:CreateToggle({
+    Name = "Enable Custom Jump Power",
+    CurrentValue = false,
+    Flag = "CustomJumpPower",
+    Callback = function(Value)
+         getgenv().enableCustomJumpPower = Value
+         if Value then
+             if player.Character and player.Character:FindFirstChild("Humanoid") then
+                 player.Character.Humanoid.JumpPower = desiredJumpPower
+             end
+             Rayfield:Notify({
+                 Title = "Custom Jump Power Enabled",
+                 Content = "Custom Jump Power activated!",
+                 Duration = 4,
+                 Image = 4483345998,
+             })
+         else
+             if player.Character and player.Character:FindFirstChild("Humanoid") then
+                 -- Возвращаем стандартную силу прыжка при выключении
+                 player.Character.Humanoid.JumpPower = DEFAULT_JUMP_POWER
+             end
+             Rayfield:Notify({
+                 Title = "Custom Jump Power Disabled",
+                 Content = "Reverting to default jump power on next spawn.",
+                 Duration = 4,
+                 Image = 4483345998,
+             })
+         end
+    end,
+})
+
+-- Секция для FPS Booster (активируйте только при слабом устройстве)
+local FPSBoosterSection = PlayerSettingsTab:CreateSection("FPS Booster (turn it on only if you have a very weak device)")
+
+-- Кнопка "Remove All Texture" для повышения FPS
+PlayerSettingsTab:CreateButton({
+    Name = "Remove All Texture",
+    Callback = function()
+        for _, obj in ipairs(game:GetDescendants()) do
+            if obj:IsA("Texture") or obj:IsA("Decal") then
+                obj:Destroy()
+            end
+            if obj:IsA("BasePart") then
+                obj.Material = Enum.Material.SmoothPlastic
+            end
+        end
+    end,
+})
+
+-- Переключатель "Hide Unnecessary Parts"
+PlayerSettingsTab:CreateToggle({
+    Name = "Hide Unnecessary Parts",
+    CurrentValue = false,
+    Flag = "HideUnnecessary",
+    Callback = function(Value)
+        if Value then
+            workspace.MainTerrain.Parent = game:GetService("ReplicatedStorage")
+        else
+            game:GetService("ReplicatedStorage").MainTerrain.Parent = workspace
+        end
+    end,
+})
+
+-- Переключатель "Hide Player Blocks"
+PlayerSettingsTab:CreateToggle({
+    Name = "Hide Player Blocks",
+    CurrentValue = false,
+    Flag = "HidePlayerBlocks",
+    Callback = function(Value)
+        if Value then
+            workspace.Blocks.Parent = game:GetService("ReplicatedStorage")
+        else
+            game:GetService("ReplicatedStorage").Blocks.Parent = workspace
+        end
+    end,
+})
+
+-- Переключатель "Hide All Objects (Optimized for Auto-Farm)"
+PlayerSettingsTab:CreateToggle({
+    Name = "Hide All Objects (Optimized for Auto-Farm)",
+    CurrentValue = false,
+    Flag = "HideAllObjects",
+    Callback = function(Value)
+        local Stuff = {
+            "Blocks",
+            "Challenge",
+            "TempStuff",
+            "Teams",
+            "MainTerrain",
+            "OtherStages",
+            "BlackZone",
+            "CamoZone",
+            "MagentaZone",
+            "New YellerZone",
+            "Really blueZone",
+            "Really redZone",
+            "Sand",
+            "Water",
+            "WhiteZone",
+            "WaterMask"
+        }
+        if Value then
+            for _, v in ipairs(Stuff) do
+                local object = workspace:FindFirstChild(v) or workspace.BoatStages:FindFirstChild("OtherStages")
+                if object then
+                    object.Parent = game:GetService("ReplicatedStorage")
+                end
+            end
+        else
+            for _, v in ipairs(Stuff) do
+                local object = game:GetService("ReplicatedStorage"):FindFirstChild(v)
+                if object then
+                    if v == "OtherStages" then
+                        game:GetService("ReplicatedStorage").OtherStages.Parent = workspace.BoatStages
+                    else
+                        object.Parent = workspace
+                    end
+                end
+            end
+        end
+    end,
+})
+
+-- Секция для Anti-AFK
+local AntiAFKSection = PlayerSettingsTab:CreateSection("Anti-AFK")
+PlayerSettingsTab:CreateToggle({
+    Name = "Anti-AFK",
+    CurrentValue = true,
+    Flag = "AntiAFK",
+    Callback = function(Value)
+        getgenv().antiAfkEnabled = Value  -- previously: getgenv().afk6464
+        if Value then
+            Rayfield:Notify({
+                Title = "Anti-AFK Enabled",
+                Content = "Anti-AFK activated. You will not be kicked for 20 minutes of inactivity.",
+                Duration = 6.5,
+                Image = 4483345998,
+            })
+        else
+            Rayfield:Notify({
+                Title = "Anti-AFK Disabled",
+                Content = "Anti-AFK deactivated. You may be kicked after 20 minutes of inactivity.",
+                Duration = 6.5,
+                Image = 4483345998,
+            })
+        end
+    end,
+})
+
+-- Reapply custom movement settings on character respawn if toggles are enabled
+player.CharacterAdded:Connect(function(newCharacter)
+    local humanoid = newCharacter:WaitForChild("Humanoid")
+    if humanoid then
+        if getgenv().enableCustomWalkSpeed then
+            humanoid.WalkSpeed = desiredWalkSpeed
+        else
+            humanoid.WalkSpeed = DEFAULT_WALK_SPEED
+        end
+        if getgenv().enableCustomJumpPower then
+            humanoid.JumpPower = desiredJumpPower
+        else
+            humanoid.JumpPower = DEFAULT_JUMP_POWER
+        end
+    end
+end)
+
+-------------------------------------------------------
+-- Серверные действия
+local ServerTab = Window:CreateTab("Server", 4483362458)
+ServerTab:CreateSection("Server Actions")
+
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
+local PlaceId = game.PlaceId
+local JobId = game.JobId
+local httprequest = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
+
+-- Кнопка: Rejoin текущего сервера
+ServerTab:CreateButton({
+    Name = "Rejoin",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Rejoining",
+            Content = "Please wait, rejoining the server...",
+            Duration = 6.5,
+            Image = 4483345998,
+        })
+        wait(0.2)
+        if #game:GetService("Players"):GetPlayers() <= 1 then
+            game:GetService("Players").LocalPlayer:Kick("\nRejoining...")
+            wait()
+            TeleportService:Teleport(PlaceId, game:GetService("Players").LocalPlayer)
+        else
+            TeleportService:TeleportToPlaceInstance(PlaceId, JobId, game:GetService("Players").LocalPlayer)
+        end
+        wait(5)
+        Rayfield:Notify({
+            Title = "Rejoin may have failed",
+            Content = "If rejoining fails, try an alternative method (e.g., Infinite Yield).",
+            Duration = 6.5,
+            Image = 4483345998,
+        })
+    end,
+})
+
+-- Кнопка: Server Hop (переход на другой сервер)
+ServerTab:CreateButton({
+    Name = "Server Hop",
+    Callback = function()
+        if httprequest then
+            Rayfield:Notify({
+                Title = "Server Hop",
+                Content = "Searching for a new server...",
+                Duration = 6.5,
+                Image = 4483345998,
+            })
+            wait(0.2)
+            local servers = {}
+            local req = httprequest({
+                Url = string.format("https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true", PlaceId)
+            })
+            local body = HttpService:JSONDecode(req.Body)
+            if body and body.data then
+                for i, v in next, body.data do
+                    if type(v) == "table" and tonumber(v.playing) and tonumber(v.maxPlayers)
+                    and v.playing < v.maxPlayers and v.id ~= JobId then
+                        table.insert(servers, 1, v.id)
+                    end
+                end
+            end
+            if #servers > 0 then
+                TeleportService:TeleportToPlaceInstance(PlaceId, servers[math.random(1, #servers)], game:GetService("Players").LocalPlayer)
+            else
+                Rayfield:Notify({
+                    Title = "Error",
+                    Content = "Could not find a suitable server.",
+                    Duration = 6.5,
+                    Image = 4483345998,
+                })
+            end
+            wait(5)
+            Rayfield:Notify({
+                Title = "Server Hop may have failed",
+                Content = "Server hop may have failed. Try Infinite Yield.",
+                Duration = 6.5,
+                Image = 4483345998,
+            })
+        end
+    end,
+})
+
+-------------------------------------------------------
+-- Функционал Anti-AFK (оптимизированный)
+local function enableAntiAFK()
+    if not connection then
+        Rayfield:Notify({
+            Title = "Anti-AFK | ON",
+            Content = "Anti-AFK activated. You will not be kicked for 20 minutes of inactivity.",
+            Duration = 6.5,
+            Image = 4483345998,
+        })
+        connection = Players.LocalPlayer.Idled:Connect(function()
+            if getgenv().antiAfkEnabled then
+                VirtualUser:CaptureController()
+                VirtualUser:ClickButton2(Vector2.new())
+            end
+        end)
+    end
+end
+
+local function disableAntiAFK()
+    if connection then
+        connection:Disconnect()
+        connection = nil
+        Rayfield:Notify({
+            Title = "Anti-AFK | OFF",
+            Content = "Anti-AFK deactivated. You may be kicked after 20 minutes of inactivity.",
+            Duration = 6.5,
+            Image = 4483345998,
+        })
+    end
+end
+
+local function loopAntiAFK()
+    while true do
+        if getgenv().antiAfkEnabled then
+            enableAntiAFK()
+        else
+            disableAntiAFK()
+        end
+        wait(1)
+    end
+end
+
+spawn(loopAntiAFK)
+
